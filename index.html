@@ -191,7 +191,7 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
       <li>Durumu okuyun ve masaya "Masaya böyle dizin" planındaki döşemeleri dizin.</li>
       <li>Sorunun nedenini tartışın. Hangi döşemeyi ekleyeceğinize ya da taşıyacağınıza siz karar verin. Takılırsanız ipucu alın.</li>
       <li>"Dürbünü aç" düğmesine basın, telefonu masaya tutun ve "Şimdi 2100'e bak" deyin. Dürbün 2100'e bakar. İşe yaradıysa hangi canlının geri döndüğünü ve nerede yaşadığını bulun.</li>
-      <li>Ödül masada bir hayvan pulu ve bir kozalak, ekranda albüme eklenen bir tür. Kozalaklarla 10. durumda Ben, Toplum ve Devlet kararları alınır.</li>
+      <li>Ödül masada bir hayvan pulu ve bir kozalak, ekranda albüme eklenen bir tür. Kozalaklarla 10. durumda Kendim, Mahallem ve Ülkem kararları alınır.</li>
     </ol>
   </section>
 </div>
@@ -10313,9 +10313,9 @@ const TUR = {
 const HAB = ['orman', 'nehir', 'sulak', 'cayir', 'dag'];
 
 const EYLEM = [
-  { id: 'ben', lv: 'Ben', ad: 'Okula yürüyerek ya da toplu taşımayla gidiyorum, evde enerjiyi boşa harcamıyoruz.', etki: 0.3 },
-  { id: 'toplum', lv: 'Toplum', ad: 'Mahallemizde dereyi temizliyor, okul bahçesine ağaç dikiyoruz.', etki: 0.5 },
-  { id: 'devlet', lv: 'Devlet', ad: 'Kömür santralleri kapanıyor, elektrik güneşten ve rüzgârdan geliyor.', etki: 0.7 }
+  { id: 'ben', lv: 'Kendim', ad: 'Okula yürüyerek ya da toplu taşımayla gidiyorum, evde enerjiyi boşa harcamıyoruz.', etki: 0.3 },
+  { id: 'toplum', lv: 'Mahallem', ad: 'Mahallemizde dereyi temizliyor, okul bahçesine ağaç dikiyoruz.', etki: 0.5 },
+  { id: 'devlet', lv: 'Ülkem', ad: 'Kömür santralleri kapanıyor, elektrik güneşten ve rüzgârdan geliyor.', etki: 0.7 }
 ];
 const S = { yil: 2100, eylem: new Set(), perde: 0.5, cal: null, img: null, ornek: true, d: 0, cozulen: new Set(), yildiz: new Set(), sonuc: null, foto: false, ipucu: 0, cevap: {}, yanlisVar: false };
 const MALIYET = { ben: 2, toplum: 3, devlet: 4 };
@@ -10399,12 +10399,12 @@ const DURUM = [
     soru: { tip: 'neden', metin: 'Dere 2100\'de neden yaz boyu aktı?', secenekler: ['Ağaçlar havadaki bulutları çekip yağmur yağdırdı.', 'Ağaçlar derenin üstünü kapattı, su hiç buharlaşmadı.', 'Ağaç kökleri yeraltından dereye su pompaladı.', 'Ormanın toprağı yağmuru tuttu ve dereyi yavaş yavaş besledi.'], dogru: 3 } },
   { ad: 'Deniz\'in Türkiye\'si', yer: 'Bütün Türkiye', em: '🌍', tur: 'Bütün türler',
     mektup: 'Son isteğim: Bütün türlerin birlikte yaşadığı bir Türkiye kurun. Kazandığınız kozalaklarla da bugünden kararlar verin.',
-    bilgi: 'Ekosistem bir bütündür. Her tür başka bir yaşam alanına ve başka canlılara bağlıdır. Masayı düzeltmek tek başına yetmez; ısınmayı da durdurmak gerekir. Bunun için Ben, Toplum ve Devlet birlikte çalışmalı.',
+    bilgi: 'Ekosistem bir bütündür. Her tür başka bir yaşam alanına ve başka canlılara bağlıdır. Masayı düzeltmek tek başına yetmez; ısınmayı da durdurmak gerekir. Bunun için Kendim, Mahallem ve Ülkem birlikte çalışmalı.',
     bas: [[1, 1, 'orman'], [2, 1, 'orman'], [1, 2, 'orman'], [5, 0, 'orman'], [2, 2, 'nehir'], [3, 2, 'nehir'], [6, 2, 'sulak'], [6, 3, 'sulak'], [7, 3, 'cayir'], [3, 3, 'dag'], [3, 4, 'dag'], [2, 4, 'dag'], [5, 4, 'cayir']],
     coz: [[1, 1, 'orman'], [2, 1, 'orman'], [1, 2, 'orman'], [0, 1, 'orman'], [2, 2, 'nehir'], [3, 2, 'nehir'], [4, 2, 'nehir'], [5, 2, 'sulak'], [5, 3, 'sulak'], [6, 3, 'cayir'], [3, 3, 'dag'], [3, 4, 'dag'], [2, 4, 'dag'], [4, 4, 'cayir']],
     kural: 'Döşemeleri istediğiniz kadar değiştirebilirsiniz. Kararlar kozalakla alınır.',
     kontrol: h => h.tur.every(t => t.var),
-    ipuclari: ['Önceki dokuz durumda öğrendiklerinizi düşünün: her tür neye ihtiyaç duyuyordu?', 'Masa doğru olsa bile ısınma çok yüksekse türler yaşayamaz.', 'Kozalaklarınızla Ben, Toplum ve Devlet kararlarını birlikte alın.'],
+    ipuclari: ['Önceki dokuz durumda öğrendiklerinizi düşünün: her tür neye ihtiyaç duyuyordu?', 'Masa doğru olsa bile ısınma çok yüksekse türler yaşayamaz.', 'Kozalaklarınızla Kendim, Mahallem ve Ülkem kararlarını birlikte alın.'],
     soru: null }
 ];
 const dokun = (a, b) => G.parcalar.some(p => p.tur === a && [...p.komsu].some(k => G.parcalar[k].tur === b));
@@ -10647,7 +10647,7 @@ function yenile() {
     const [R, G2, B] = TUR[t].renk;
     return `<div class="hb"><span><i class="sw" style="background:rgb(${R},${G2},${B})"></i><b>${TUR[t].ad}</b></span>${b ? `<div class="bar"><i style="width:${Math.round(s / b * 100)}%"></i></div><span class="muted">%${Math.round(s / b * 100)} sağlam · ${ps.length} parça</span>` : '<span class="muted">Masada görülmedi</span>'}</div>`; }).join('');
   const n = S.eylem.size;
-  document.getElementById('birlikte').textContent = n === 3 ? 'Ben, Toplum ve Devlet birlikte: ısınma 1,5 derecede duruyor.' : n ? 'Daha fazla karar, daha az ısınma. Hepsi birlikte en güçlüsü.' : (S.d < 9 ? 'Durum 1-9\'da dünya 2100\'de 2 derece ısınmış kabul ediliyor. Kararlar asıl 10. durumda önemli: orada hiçbir şey yapmazsak dünya 3 derece ısınır.' : 'Hiçbir şey yapmazsak 2100\'de dünya 3 derece ısınmış olur.');
+  document.getElementById('birlikte').textContent = n === 3 ? 'Kendim, Mahallem ve Ülkem birlikte: ısınma 1,5 derecede duruyor.' : n ? 'Daha fazla karar, daha az ısınma. Hepsi birlikte en güçlüsü.' : (S.d < 9 ? 'Durum 1-9\'da dünya 2100\'de 2 derece ısınmış kabul ediliyor. Kararlar asıl 10. durumda önemli: orada hiçbir şey yapmazsak dünya 3 derece ısınır.' : 'Hiçbir şey yapmazsak 2100\'de dünya 3 derece ısınmış olur.');
 }
 
 /* ---------- Kararlar ---------- */
