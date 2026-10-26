@@ -10755,7 +10755,7 @@ function durumCiz() {
   if (k && k.asama === 'soru') {
     const q = d.soru;
     alt = `<div class="sonuc ok" role="status"><b>Masadaki değişiklik 2100'de işe yaradı.</b>`;
-    if (q.tip === 'canli') alt += `<span>Şimdi hangi canlının geri döndüğünü bulun. Pulunu masada doğru döşemenin üstüne koyup dürbünle yeniden bakın ya da aşağıdan seçin.</span>
+    if (q.tip === 'canli') alt += `<span>Şimdi hangi canlının geri döndüğünü bulun. Pulunu QR yüzü üstte, doğru döşemenin alt yarısına koyup dürbünle yeniden bakın ya da aşağıdan seçin.</span>
       <div class="secim" role="group" aria-label="Canlı">${CANLI.map(([em, ad]) => `<button class="chip" type="button" data-canli="${em}" aria-pressed="${S.cevap.canli === em}">${em} ${ad}</button>`).join('')}</div>
       <div class="secim" role="group" aria-label="Döşeme">${HAB.map(t => { const [R, G2, B] = TUR[t].renk; return `<button class="chip" type="button" data-yer="${t}" aria-pressed="${S.cevap.yer === t}"><i class="sw" style="background:rgb(${R},${G2},${B})"></i>${TUR[t].ad}</button>`; }).join('')}</div>`;
     else alt += `<span><b>${q.metin}</b></span><div class="secenek">${q.secenekler.map((x, i) => `<button class="chip" type="button" data-sec="${i}" aria-pressed="${S.cevap.sec === i}">${'ABCD'[i]}) ${x}</button>`).join('')}</div>`;
@@ -10766,7 +10766,7 @@ function durumCiz() {
   if (son && !(k && k.asama === 'odul')) alt = `<div class="sonuc" role="group"><b>Önce kararlarınızı verin</b>${kararBlok()}</div>` + alt;
   if (k && k.asama === 'odul') alt = `<div class="sonuc ok" role="status">
       <div class="odul"><span class="em" aria-hidden="true">${d.em}</span><b>Doğru! ${son ? 'Deniz\'in Türkiye\'si kuruldu.' : d.tur + ' 2100\'de yaşıyor.'}${yildiz ? ' ⭐ İpucusuz çözdünüz.' : ''}</b><span>${d.bilgi}</span></div>
-      <div><b>Ödülünüz</b><br>Masada: ${son ? `Bütün pullar masada; bu masa Deniz'in yeni Türkiye'si. <b>Final:</b> Masadaki dalda ${S.tohum.size} kozalak var. Her biri bugün verdiğiniz doğru bir karar. Kuru bir dal olarak başladı; şimdi sizin kararlarınızla büyüyen Gelecek Ağacı. 2100'ün Türkiye'si bu ağacın gölgesinde.${S.tohum.size < 30 ? ' Eksik kozalaklar, atlanan durumlarda. Geri dönüp tamamlayabilirsiniz.' : ''}` : `${d.pul ? `${d.em} pulunu ${TUR[S.cevap.yer].ad.toLowerCase()} döşemesinin üstüne koyun. ` : ''}Dalda şimdi ${S.tohum.size} kozalak var.`}<br>Ekranda: ${d.em} 2100 albümüne eklendi. Kararlarınızla 2100'de ısınma ${son ? '3,00' : '2,00'} dereceden ${fmt(sicaklik(2100))} dereceye indi.</div>
+      <div><b>Ödülünüz</b><br>Masada: ${son ? `Bütün pullar masada; bu masa Deniz'in yeni Türkiye'si. <b>Final:</b> Masadaki dalda ${S.tohum.size} kozalak var. Her biri bugün verdiğiniz doğru bir karar. Kuru bir dal olarak başladı; şimdi sizin kararlarınızla büyüyen Gelecek Ağacı. 2100'ün Türkiye'si bu ağacın gölgesinde.${S.tohum.size < 30 ? ' Eksik kozalaklar, atlanan durumlarda. Geri dönüp tamamlayabilirsiniz.' : ''}` : `${d.pul ? `${d.em} pulunu çevirip resmi üstte olacak şekilde ${TUR[S.cevap.yer].ad.toLowerCase()} döşemesinde bırakın. ` : ''}Dalda şimdi ${S.tohum.size} kozalak var.`}<br>Ekranda: ${d.em} 2100 albümüne eklendi. Kararlarınızla 2100'de ısınma ${son ? '3,00' : '2,00'} dereceden ${fmt(sicaklik(2100))} dereceye indi.</div>
       ${son ? '' : '<button class="btn primary" type="button" data-git="sonraki">Sonraki duruma geç</button>'}
     </div>`;
   document.getElementById('durumKart').innerHTML = `
