@@ -196,7 +196,7 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
       <li>Durumu okuyun ve masaya "Masaya böyle dizin" planındaki döşemeleri dizin.</li>
       <li>Sorunun nedenini tartışın. Hangi döşemeyi ekleyeceğinize ya da taşıyacağınıza siz karar verin. Takılırsanız ipucu alın.</li>
       <li>"Dürbünü aç" düğmesine basın, telefonu masaya tutun ve "Şimdi 2100'e bak" deyin. Dürbün 2100'e bakar. İşe yaradıysa hangi canlının geri döndüğünü ve nerede yaşadığını bulun.</li>
-      <li>Sonra gelecek için üç karar verin: Kendim, Mahallem, Ülkem. Her doğru karar dürbündeki 2100'ü serinletir ve masadaki çıplak dala bir kozalak astırır.</li>
+      <li>Sonra gelecek için üç karar verin: Kendim, Mahallem, Ülkem. Her doğru karar dürbündeki 2100'ü serinletir ve masadaki çıplak dala bir kozalak taktırır.</li>
       <li>Ödül masada hayvan pulu ve kozalaklar, ekranda albüme eklenen bir tür.</li>
       <li>Final: 10. durumdan sonra 30 kozalakla çıplak dal bir Gelecek Ağacı'na dönüşür.</li>
     </ol>
@@ -10722,7 +10722,7 @@ kararCiz();
 function kararBlok() {
   const d = S.d;
   return `<div class="karar">${SEVIYE.map((sv, s) => { const ok = S.eylem.has(sv.id), sec = S.karar[s];
-    return `<div class="kr"><b>${sv.lv}</b>${ok ? `<span class="ok">✓ ${KARAR[d][s][0]}<br><b>🌰 Çıplak dala 1 kozalak asın.</b></span>` : kararSira(d, s).map(i => { const o = KARAR[d][s][i];
+    return `<div class="kr"><b>${sv.lv}</b>${ok ? `<span class="ok">✓ ${KARAR[d][s][0]}<br><b>🌰 Çıplak dala 1 kozalak takın.</b></span>` : kararSira(d, s).map(i => { const o = KARAR[d][s][i];
       return `<button class="act" type="button" data-kr="${s}" data-ks="${i}" aria-pressed="false"><span>${i ? o[0] : o}</span>${sec === i ? `<small class="no">${o[1]}</small>` : ''}</button>`; }).join('')}</div>`; }).join('')}
     <span class="muted">2100'de ısınma şu an <b>${fmt(sicaklik(2100))} °C</b>. Her doğru karar dürbündeki 2100'ü biraz serinletir ve dala bir kozalak kazandırır.</span></div>`;
 }
