@@ -196,9 +196,9 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
       <li>Durumu okuyun ve masaya "Masaya böyle dizin" planındaki döşemeleri dizin.</li>
       <li>Sorunun nedenini tartışın. Hangi döşemeyi ekleyeceğinize ya da taşıyacağınıza siz karar verin. Takılırsanız ipucu alın.</li>
       <li>"Dürbünü aç" düğmesine basın, telefonu masaya tutun ve "Şimdi 2100'e bak" deyin. Dürbün 2100'e bakar. İşe yaradıysa hangi canlının geri döndüğünü ve nerede yaşadığını bulun.</li>
-      <li>Sonra gelecek için üç karar verin: Kendim, Mahallem, Ülkem. Her doğru karar dürbündeki 2100'ü serinletir ve masadaki kuru dala bir kozalak taktırır.</li>
+      <li>Sonra gelecek için üç karar verin: Kendim, Mahallem, Ülkem. Her doğru karar dürbündeki 2100'ü serinletir. İlk denemede doğru verilen karar masadaki kuru dala bir kozalak taktırır.</li>
       <li>Ödül masada hayvan pulu ve kozalaklar, ekranda albüme eklenen bir tür.</li>
-      <li>Final: 10. durumdan sonra 30 kozalakla kuru dal bir Gelecek Ağacı'na dönüşür.</li>
+      <li>Final: 10. durumdan sonra kuru dal kozalaklarla bir Gelecek Ağacı'na dönüşür. Boş kalan yerler, ilk denemede yanlış verilen kararları gösterir.</li>
     </ol>
   </section>
 </div>
@@ -10324,7 +10324,7 @@ const EYLEM = [
   { id: 'toplum', lv: 'Mahallem', ad: 'Mahallemizde dereyi temizliyor, okul bahçesine ağaç dikiyoruz.', etki: 0.5 },
   { id: 'devlet', lv: 'Ülkem', ad: 'Kömür santralleri kapanıyor, elektrik güneşten ve rüzgârdan geliyor.', etki: 0.7 }
 ];
-const S = { karar: {}, tohum: new Set(), yil: 2100, eylem: new Set(), perde: 0.5, cal: null, img: null, ornek: true, d: 0, cozulen: new Set(), yildiz: new Set(), sonuc: null, foto: false, ipucu: 0, cevap: {}, yanlisVar: false };
+const S = { karar: {}, kararYanlis: new Set(), tohum: new Set(), yil: 2100, eylem: new Set(), perde: 0.5, cal: null, img: null, ornek: true, d: 0, cozulen: new Set(), yildiz: new Set(), sonuc: null, foto: false, ipucu: 0, cevap: {}, yanlisVar: false };
 const MALIYET = { ben: 2, toplum: 3, devlet: 4 };
 /* ---------- Gelecek için kararlar: her durumda Kendim, Mahallem, Ülkem ---------- */
 // Her seviyede ilk seçenek doğrudur; ekranda sırası karıştırılır. Yanlışların yanında nedeni var.
@@ -10722,13 +10722,13 @@ kararCiz();
 function kararBlok() {
   const d = S.d;
   return `<div class="karar">${SEVIYE.map((sv, s) => { const ok = S.eylem.has(sv.id), sec = S.karar[s];
-    return `<div class="kr"><b>${sv.lv}</b>${ok ? `<span class="ok">✓ ${KARAR[d][s][0]}<br><b>🌰 Dala 1 kozalak takın.</b></span>` : kararSira(d, s).map(i => { const o = KARAR[d][s][i];
+    return `<div class="kr"><b>${sv.lv}</b>${ok ? `<span class="ok">✓ ${KARAR[d][s][0]}<br><b>${S.tohum.has(d + '-' + s) ? '🌰 Dala 1 kozalak takın.' : 'İlk denemede bulunamadığı için bu karara kozalak yok.'}</b></span>` : kararSira(d, s).map(i => { const o = KARAR[d][s][i];
       return `<button class="act" type="button" data-kr="${s}" data-ks="${i}" aria-pressed="false"><span>${i ? o[0] : o}</span>${sec === i ? `<small class="no">${o[1]}</small>` : ''}</button>`; }).join('')}</div>`; }).join('')}
-    <span class="muted">2100'de ısınma şu an <b>${fmt(sicaklik(2100))} °C</b>. Her doğru karar dürbündeki 2100'ü biraz serinletir ve dala bir kozalak kazandırır.</span></div>`;
+    <span class="muted">2100'de ısınma şu an <b>${fmt(sicaklik(2100))} °C</b>. Her doğru karar dürbündeki 2100'ü biraz serinletir; ilk denemede doğru olan karar dala bir kozalak kazandırır.</span></div>`;
 }
 function kararVer(s, i) {
   const sv = SEVIYE[s];
-  if (i === 0) { S.eylem.add(sv.id); delete S.karar[s]; S.tohum.add(S.d + '-' + s); kaydet(); } else { S.karar[s] = i; S.yanlisVar = true; }
+  if (i === 0) { S.eylem.add(sv.id); delete S.karar[s]; if (!S.kararYanlis.has(s)) S.tohum.add(S.d + '-' + s); kaydet(); } else { S.karar[s] = i; S.kararYanlis.add(s); S.yanlisVar = true; }
   kararCiz(); yenile();
   if (S.d < 9 && S.eylem.size === 3 && S.sonuc && S.sonuc.asama === 'karar') odulVer();
   durumCiz();
@@ -10766,7 +10766,7 @@ function durumCiz() {
   if (son && !(k && k.asama === 'odul')) alt = `<div class="sonuc" role="group"><b>Önce kararlarınızı verin</b>${kararBlok()}</div>` + alt;
   if (k && k.asama === 'odul') alt = `<div class="sonuc ok" role="status">
       <div class="odul"><span class="em" aria-hidden="true">${d.em}</span><b>Doğru! ${son ? 'Deniz\'in Türkiye\'si kuruldu.' : d.tur + ' 2100\'de yaşıyor.'}${yildiz ? ' ⭐ İpucusuz çözdünüz.' : ''}</b><span>${d.bilgi}</span></div>
-      <div><b>Ödülünüz</b><br>Masada: ${son ? `Bütün pullar masada; bu masa Deniz'in yeni Türkiye'si. <b>Final:</b> Masadaki dalda ${S.tohum.size} kozalak var. Her biri bugün verdiğiniz doğru bir karar. Kuru bir dal olarak başladı; şimdi sizin kararlarınızla büyüyen Gelecek Ağacı. 2100'ün Türkiye'si bu ağacın gölgesinde.${S.tohum.size < 30 ? ' Eksik kozalaklar, atlanan durumlarda. Geri dönüp tamamlayabilirsiniz.' : ''}` : `${d.pul ? `${d.em} pulunu çevirip resmi üstte olacak şekilde ${TUR[S.cevap.yer].ad.toLowerCase()} döşemesinde bırakın. ` : ''}Dalda şimdi ${S.tohum.size} kozalak var.`}<br>Ekranda: ${d.em} 2100 albümüne eklendi. Kararlarınızla 2100'de ısınma ${son ? '3,00' : '2,00'} dereceden ${fmt(sicaklik(2100))} dereceye indi.</div>
+      <div><b>Ödülünüz</b><br>Masada: ${son ? `Bütün pullar masada; bu masa Deniz'in yeni Türkiye'si. <b>Final:</b> Masadaki dalda ${S.tohum.size} kozalak var. Her biri bugün verdiğiniz doğru bir karar. Kuru bir dal olarak başladı; şimdi sizin kararlarınızla büyüyen Gelecek Ağacı. 2100'ün Türkiye'si bu ağacın gölgesinde.${S.tohum.size < 30 ? ' Boş kalan yerler, ilk denemede doğru verilemeyen kararlar.' : ''}` : `${d.pul ? `${d.em} pulunu çevirip resmi üstte olacak şekilde ${TUR[S.cevap.yer].ad.toLowerCase()} döşemesinde bırakın. ` : ''}Dalda şimdi ${S.tohum.size} kozalak var.`}<br>Ekranda: ${d.em} 2100 albümüne eklendi. Kararlarınızla 2100'de ısınma ${son ? '3,00' : '2,00'} dereceden ${fmt(sicaklik(2100))} dereceye indi.</div>
       ${son ? '' : '<button class="btn primary" type="button" data-git="sonraki">Sonraki duruma geç</button>'}
     </div>`;
   document.getElementById('durumKart').innerHTML = `
@@ -10817,7 +10817,7 @@ function cevapla() {
   if (q.tip === 'canli') m = S.cevap.canli !== q.dogru ? 'Bu canlı burada yaşamaz. Deniz\'in mektubunu yeniden okuyun.' : 'Canlı doğru ama bu döşeme onun yaşam alanı değil.';
   S.sonuc = { asama: 'soru', yanlis: m };
 }
-function durumSec(i) { S.d = i; S.sonuc = null; S.eylem.clear(); S.karar = {}; kararCiz(); S.foto = false; S.ipucu = 0; S.cevap = {}; S.yanlisVar = false; izgaraYukle(DURUM[i].bas); if (document.getElementById('izgara')) izgaraCiz(); S.img = ornekCiz(DURUM[i].bas); cozumle(S.img); yenile(); stripCiz(); durumCiz();
+function durumSec(i) { S.d = i; S.sonuc = null; S.eylem.clear(); S.karar = {}; S.kararYanlis = new Set(); kararCiz(); S.foto = false; S.ipucu = 0; S.cevap = {}; S.yanlisVar = false; izgaraYukle(DURUM[i].bas); if (document.getElementById('izgara')) izgaraCiz(); S.img = ornekCiz(DURUM[i].bas); cozumle(S.img); yenile(); stripCiz(); durumCiz();
   document.getElementById('durum').textContent = 'Ekranda başlangıç dizilimi var. Masayı kurup değiştirin, sonra fotoğrafını çekin.'; }
 document.getElementById('strip').addEventListener('click', e => { const b = e.target.closest('.dno'); if (!b) return; if (b.dataset.sifir) { S.cozulen.clear(); S.yildiz.clear(); S.tohum.clear(); S.eylem.clear(); kaydet(); kararCiz(); durumSec(0); return; } durumSec(+b.dataset.i); });
 document.getElementById('durumKart').addEventListener('click', e => {
