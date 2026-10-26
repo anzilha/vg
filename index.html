@@ -55,6 +55,11 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 .act .lv { grid-row: span 2; font: 700 12px/1 var(--f-body); letter-spacing: .06em; text-transform: uppercase; padding: 6px 7px; border-radius: 6px; background: var(--line); color: var(--ink); align-self: center; }
 .act[aria-pressed="true"] .lv { background: var(--good); color: var(--panel); }
 .act small { color: var(--muted); }
+.karar { display: grid; gap: 12px; }
+.kr { display: grid; gap: 6px; }
+.kr > b { font: 700 12px/1 var(--f-body); letter-spacing: .06em; text-transform: uppercase; }
+.kr .act { grid-template-columns: 1fr; }
+.kr .act small.no { color: var(--bad, #b3261e); }
 .species { display: grid; gap: 8px; }
 .sp { display: grid; grid-template-columns: 34px 1fr; gap: 2px 10px; align-items: start; padding: 8px 0; border-top: 1px dashed var(--line); }
 .sp:first-child { border-top: 0; }
@@ -163,7 +168,7 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
         <input id="yilR" type="range" min="2025" max="2100" step="5" value="2100" aria-label="Yıl">
         <div class="year-top"><span class="muted">Dünyanın sıcaklığı, sanayi öncesine göre</span><span class="temp" id="sic"></span></div>
       </div>
-      <h2>Bugün ne yapıyoruz?</h2>
+      <h2>Gelecek için kararlarımız</h2>
       <div class="acts" id="acts"></div>
       <p class="muted" id="birlikte"></p>
     </section>
@@ -191,7 +196,9 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
       <li>Durumu okuyun ve masaya "Masaya böyle dizin" planındaki döşemeleri dizin.</li>
       <li>Sorunun nedenini tartışın. Hangi döşemeyi ekleyeceğinize ya da taşıyacağınıza siz karar verin. Takılırsanız ipucu alın.</li>
       <li>"Dürbünü aç" düğmesine basın, telefonu masaya tutun ve "Şimdi 2100'e bak" deyin. Dürbün 2100'e bakar. İşe yaradıysa hangi canlının geri döndüğünü ve nerede yaşadığını bulun.</li>
-      <li>Ödül masada bir hayvan pulu ve bir kozalak, ekranda albüme eklenen bir tür. Kozalaklarla 10. durumda Kendim, Mahallem ve Ülkem kararları alınır.</li>
+      <li>Sonra gelecek için üç karar verin: Kendim, Mahallem, Ülkem. Her doğru karar dürbündeki 2100'ü serinletir ve masadaki gelecek kavanozuna bir tohum attırır.</li>
+      <li>Ödül masada hayvan pulu ve tohumlar, ekranda albüme eklenen bir tür.</li>
+      <li>Final: 10. durumdan sonra kavanozdaki tohumları birlikte saksıya ya da okul bahçesine ekin.</li>
     </ol>
   </section>
 </div>
@@ -10317,8 +10324,64 @@ const EYLEM = [
   { id: 'toplum', lv: 'Mahallem', ad: 'Mahallemizde dereyi temizliyor, okul bahçesine ağaç dikiyoruz.', etki: 0.5 },
   { id: 'devlet', lv: 'Ülkem', ad: 'Kömür santralleri kapanıyor, elektrik güneşten ve rüzgârdan geliyor.', etki: 0.7 }
 ];
-const S = { yil: 2100, eylem: new Set(), perde: 0.5, cal: null, img: null, ornek: true, d: 0, cozulen: new Set(), yildiz: new Set(), sonuc: null, foto: false, ipucu: 0, cevap: {}, yanlisVar: false };
+const S = { karar: {}, tohum: new Set(), yil: 2100, eylem: new Set(), perde: 0.5, cal: null, img: null, ornek: true, d: 0, cozulen: new Set(), yildiz: new Set(), sonuc: null, foto: false, ipucu: 0, cevap: {}, yanlisVar: false };
 const MALIYET = { ben: 2, toplum: 3, devlet: 4 };
+/* ---------- Gelecek için kararlar: her durumda Kendim, Mahallem, Ülkem ---------- */
+// Her seviyede ilk seçenek doğrudur; ekranda sırası karıştırılır. Yanlışların yanında nedeni var.
+const SEVIYE = [{ id: 'ben', lv: 'Kendim' }, { id: 'toplum', lv: 'Mahallem' }, { id: 'devlet', lv: 'Ülkem' }];
+const KARAR = [
+  [ // 1 Van Gölü
+    ['Bahar göçünde dere ağzında balık tutmuyorum, tutanları uyarıyorum.', ['Akvaryumdaki balığımı Van Gölü\'ne bırakıyorum.', 'Başka yerden gelen balık göldeki türlere zarar verebilir.'], ['Okula bisikletle gidiyorum.', 'Isınmaya iyi gelir ama kefalin dereye ulaşmasını sağlamaz.']],
+    ['Derenin önündeki bendin yanına balık geçidi yapılması için belediyeye başvuruyoruz.', ['Göl kıyısına yeni bir piknik alanı yapıyoruz.', 'Kıyıya insan ve çöp getirir, kefalin yolunu açmaz.'], ['Okul bahçesine çam ağaçları dikiyoruz.', 'Ağaç dikmek iyidir ama kefalin önündeki engeli kaldırmaz.']],
+    ['Kefalin göç ettiği derelere yeni bent yapılmıyor, av yasağına uyuluyor.', ['Van Gölü\'ne başka yerlerden tatlı su balığı getiriliyor.', 'Yeni balıklar kefalle yarışır, sorunu büyütür.'], ['Göl kıyısına büyük oteller yapılıyor.', 'Kıyı betonlaşır, derelerin göle ulaştığı yerler bozulur.']]
+  ],
+  [ // 2 Karadeniz
+    ['Ormanda yiyecek ve çöp bırakmıyorum, ayıyı insana alıştırmıyorum.', ['Ayı yavrusu görürsem eve götürüp besliyorum.', 'Yavru annesinden ayrılırsa doğada yaşayamaz.'], ['Ayı görmek için ormanın derinlerine arabayla gidiyorum.', 'Araba gürültüsü ayıyı rahatsız eder, ormanı korumaz.']],
+    ['Ormanı ikiye bölecek yeni yol yerine eski yolun genişletilmesini istiyoruz.', ['Köyün çöplerini orman kenarındaki açık bir alanda topluyoruz.', 'Açık çöplük ayıları çeker; Deniz\'in anlattığı da buydu.'], ['Ormanın kenarına büyük bir kamp alanı açıyoruz.', 'Kamp alanı ormanı daha da küçültür.']],
+    ['Ormanı bölen yolların üstüne hayvanların geçeceği ekolojik köprüler yapılıyor.', ['Ulaşım kolaylaşsın diye ormanlara daha çok yol yapılıyor.', 'Her yeni yol ormanı bir kez daha böler.'], ['Kesilen ormanın yerine şehirde büyük bir park yapılıyor.', 'Ayı şehir parkında yaşayamaz, geniş ve bütün bir ormana ihtiyacı var.']]
+  ],
+  [ // 3 Birecik
+    ['Bahçemizde böcek ilacı kullanmıyoruz.', ['Kuşlara her gün ekmek atıyorum.', 'Ekmek kuşların doğal besini değildir, onları hasta edebilir.'], ['Yuvaları kayalıklara tırmanıp yakından fotoğraflıyorum.', 'Kuşlar ürker, yuvayı bırakıp gidebilirler.']],
+    ['Kasabanın yanındaki bataklığın kurutulup tarla yapılmasına karşı çıkıyoruz.', ['Fırat kıyısına beton bir yürüyüş yolu yapıyoruz.', 'Beton, kıyıdaki küçük canlıların yaşadığı yeri yok eder.'], ['Kayalıkların yanına büyük bir seyir terası yapıyoruz.', 'Kalabalık kuşları ürkütür, yiyecek sorununu çözmez.']],
+    ['Sulak alanlar kurutulamıyor, kelaynağın beslendiği yerler koruma altına alınıyor.', ['Kelaynaklar hep kafeste tutuluyor, hiç dışarı salınmıyor.', 'Kafes türü yaşatır ama doğada yaşatmaz.'], ['Fırat üzerine yeni bir baraj yapılıyor.', 'Baraj kıyıdaki sulak alanları su altında bırakır.']]
+  ],
+  [ // 4 Bozdağ
+    ['Bozdağ\'da arazi aracıyla yolun dışına çıkmıyorum.', ['Yaban koyunu yavrusu bulursam evde besliyorum.', 'Yavru sürüsünden ayrılırsa doğada yaşayamaz.'], ['Bozkırdan çiçek toplayıp vazoya koyuyorum.', 'Bozkırın otlarını azaltır, koyunun kaçış yolunu açmaz.']],
+    ['Bozkırla dağ arasındaki tel örgüde hayvanların geçeceği boşluklar bırakılmasını istiyoruz.', ['Bozkıra hızlı büyüyen ağaçlar dikiyoruz.', 'Bozkır ormana dönerse yaban koyunu otlayamaz. Her ekosistem kendi bitkisiyle sağlıklıdır.'], ['Dağın eteğine taş ocağı açılmasını destekliyoruz.', 'Taş ocağı koyunun sığındığı kayalıkları yok eder.']],
+    ['Bozdağ ve çevresindeki bozkır birlikte koruma alanı ilan ediliyor.', ['Bozkırlar sürülüp sulanarak tarlaya çevriliyor.', 'Koyunun otladığı yer ortadan kalkar.'], ['Yaban koyunları hayvanat bahçelerine taşınıyor.', 'Hayvanat bahçesinde kaçacak dağ, otlayacak bozkır yoktur.']]
+  ],
+  [ // 5 Manavgat
+    ['Ormanda ateş yakmıyorum, cam şişe ve çöp bırakmıyorum.', ['Yangın görünce önce video çekip paylaşıyorum.', 'Önce 112\'yi aramak gerekir; her dakika önemlidir.'], ['Evde klimayı daha az çalıştırıyorum.', 'Isınmaya iyi gelir ama ormanı bu yaz yangından korumaz.']],
+    ['Dere kenarındaki ağaçları ve sazlıkları koruyor, oraya beton dökülmesine karşı çıkıyoruz.', ['Orman kenarına yeni yazlık evler yapıyoruz.', 'Evler ormana kıvılcım ve insan getirir.'], ['Kesilen kuru dalları ormanda yığın yapıp bırakıyoruz.', 'Kuru dal yığını yangına yakıt olur.']],
+    ['Ormanların yanındaki dereler ve sulak alanlar korunuyor, gözetleme kuleleri artırılıyor.', ['Yanan orman alanları yapılaşmaya açılıyor.', 'Bu, orman yakmayı kârlı hâle getirir.'], ['Derelerin suyu borularla şehirlere taşınıyor.', 'Dere kurursa orman nemini kaybeder, daha kolay yanar.']]
+  ],
+  [ // 6 Toroslar
+    ['Dağ yürüyüşünde patikadan ayrılmıyor, keçileri kovalamıyorum.', ['Keçilere tuz ve ekmek götürüyorum.', 'Yabani hayvan insana alışır, hastalanabilir.'], ['Evde elektriği tasarruflu kullanıyorum.', 'Isınmaya iyi gelir ama bölünmüş kayalıkları birleştirmez.']],
+    ['Dağı ikiye bölecek taş ocağına köyce itiraz ediyoruz.', ['Dağın tepesine teleferik yapılmasını istiyoruz.', 'Teleferik ve kalabalık sürüleri ürkütür.'], ['Dağın eteğinden yeni bir köy yolu açıyoruz.', 'Yeni yol kayalıkları bir kez daha böler.']],
+    ['Yaban keçisinin yaşadığı dağlar parça parça değil, bütün olarak koruma alanı oluyor.', ['Her dağa ayrı ayrı maden izni veriliyor.', 'Madenler dağı küçük adacıklara böler.'], ['Yaban keçisi avına daha çok izin veriliyor.', 'Zaten küçülen sürüler daha da azalır.']]
+  ],
+  [ // 7 Akşehir Gölü
+    ['Evde suyu tasarruflu kullanıyorum, musluğu açık bırakmıyorum.', ['Bahçeye çim ekip her gün hortumla suluyorum.', 'Kurak bir bölgede çim çok su ister.'], ['Arabayı her hafta hortumla yıkıyoruz.', 'Gölü besleyecek suyu boşa harcar.']],
+    ['Tarlalarda salma sulama yerine damla sulamaya geçiyoruz.', ['Yeni kuyular açıp daha çok su çekiyoruz.', 'Yeraltı suyu azalır, göl daha da kurur.'], ['Çok su isteyen ürünlerin ekimini artırıyoruz.', 'Daha çok su tarlaya gider, göle hiç ulaşmaz.']],
+    ['Derelerin suyunun bir kısmı yasayla göle ayrılıyor.', ['Gölün kuruyan tabanı tarlaya açılıyor.', 'Gölün geri dönme şansı tamamen kalkar.'], ['Başka bir havzadan boruyla su getirilip tarlalara veriliyor.', 'Sorun başka bir yere taşınır, derenin suyu yine göle ulaşmaz.']]
+  ],
+  [ // 8 Göç koridoru
+    ['Bahçemize yerli ağaç ve çiçek dikiyorum, küçük canlılara geçiş yeri oluyor.', ['Bahçedeki çalıları söküp her yeri betonla kaplıyoruz.', 'Beton küçük canlıların yolunu keser.'], ['Kelebek yakalayıp koleksiyon yapıyorum.', 'Göç eden canlıları azaltır, yollarını açmaz.']],
+    ['Orman ile dağ arasındaki boş araziye ağaç dikip yeşil bir koridor kuruyoruz.', ['İki orman arasına büyük bir otopark yapıyoruz.', 'Otopark ormanları birbirinden ayırır.'], ['Fidanların hepsini okul bahçesine, tek bir yere dikiyoruz.', 'Bahçe yeşillenir ama ormanla dağ birbirine bağlanmaz.']],
+    ['Orman ile dağ arasındaki yeşil koridorlar haritaya işlenip korunuyor.', ['Ormanların arasından yeni otoyollar geçiriliyor.', 'Otoyol göç yolunu keser.'], ['Sıcaktan bunalan hayvanlar kamyonlarla dağa taşınıyor.', 'Bütün böcekleri ve küçük canlıları taşıyamayız; kendi yolları olmalı.']]
+  ],
+  [ // 9 Kaz Dağları
+    ['Dere kaynağının çevresindeki fidan dikimine katılıyorum.', ['Derenin kenarında araba yıkıyorum.', 'Dereyi kirletir, suyunu artırmaz.'], ['Ormandan kesilmiş odunla kamp ateşi yakıyorum.', 'Ağaç kesimine destek olur, yangın riski taşır.']],
+    ['Derenin kaynağındaki ormanın kesilip maden açılmasına birlikte itiraz ediyoruz.', ['Dere yatağına beton kanal yapılmasını istiyoruz.', 'Beton kanalda su hızla akıp gider, yazın yine kurur.'], ['Kesilen ormanın yerine şehir meydanına çiçek ekiyoruz.', 'Meydan güzelleşir ama dereyi besleyen toprak geri gelmez.']],
+    ['Dere kaynaklarının çevresindeki ormanlar kesilemiyor, oralarda maden yasaklanıyor.', ['Dereler kurumasın diye yeni barajlar yapılıyor.', 'Baraj suyu tutar ama kaynağı besleyen ormanın yerini tutmaz.'], ['Ormanlar kesilip yerine güneş paneli kuruluyor.', 'Güneş enerjisi iyidir ama ormanın yerine değil, çatılara kurulmalı.']]
+  ],
+  [ // 10 Bütün Türkiye
+    ['Kısa yollarda yürüyor, bisiklete ya da toplu taşımaya biniyorum.', ['Her yıl yeni bir telefon alıyorum.', 'Her yeni cihazın üretimi çok enerji harcar.'], ['Tek kullanımlık plastik tabak ve bardak kullanıyorum.', 'Plastik petrolden yapılır ve çöp olur.']],
+    ['Okulun ve evlerin çatısına güneş paneli kuruyoruz.', ['Mahalle parkını otoparka çeviriyoruz.', 'Daha çok araba, daha az ağaç demektir.'], ['Bahçe yapraklarını ve çöpleri toplayıp yakıyoruz.', 'Yakmak havaya karbon ve duman salar; yapraklar kompost olabilir.']],
+    ['Kömür santralleri kapanıyor, elektrik güneşten ve rüzgârdan geliyor.', ['Elektrik ihtiyacı için yeni kömür santralleri yapılıyor.', 'Kömür, ısınmanın en büyük nedenlerinden biridir.'], ['Ormanlar kesilip yerine fabrikalar kuruluyor.', 'Orman havadaki karbonu tutar; kesilince ısınma artar.']]
+  ]
+];
+const kararSira = (d, s) => [0, 1, 2].map(k => (k + d + s * 2) % 3);
 
 /* ---------- 10 durum ---------- */
 // Altıgen konumları [sütun, satır, tür]; tek satırlar yarım döşeme sağa kayar.
@@ -10398,20 +10461,20 @@ const DURUM = [
     ipuclari: ['Çıplak toprağa düşen yağmur hızla akıp gider.', 'Bazı topraklar sünger gibi suyu tutar ve yavaş yavaş bırakır.', 'Derenin kaynağının çevresinde ne var?'],
     soru: { tip: 'neden', metin: 'Dere 2100\'de neden yaz boyu aktı?', secenekler: ['Ağaçlar havadaki bulutları çekip yağmur yağdırdı.', 'Ağaçlar derenin üstünü kapattı, su hiç buharlaşmadı.', 'Ağaç kökleri yeraltından dereye su pompaladı.', 'Ormanın toprağı yağmuru tuttu ve dereyi yavaş yavaş besledi.'], dogru: 3 } },
   { ad: 'Deniz\'in Türkiye\'si', yer: 'Bütün Türkiye', em: '🌍', tur: 'Bütün türler',
-    mektup: 'Son isteğim: Bütün türlerin birlikte yaşadığı bir Türkiye kurun. Kazandığınız kozalaklarla da bugünden kararlar verin.',
+    mektup: 'Son isteğim: Bütün türlerin birlikte yaşadığı bir Türkiye kurun. Bugünden de doğru kararları verin.',
     bilgi: 'Ekosistem bir bütündür. Her tür başka bir yaşam alanına ve başka canlılara bağlıdır. Masayı düzeltmek tek başına yetmez; ısınmayı da durdurmak gerekir. Bunun için Kendim, Mahallem ve Ülkem birlikte çalışmalı.',
     bas: [[1, 1, 'orman'], [2, 1, 'orman'], [1, 2, 'orman'], [5, 0, 'orman'], [2, 2, 'nehir'], [3, 2, 'nehir'], [6, 2, 'sulak'], [6, 3, 'sulak'], [7, 3, 'cayir'], [3, 3, 'dag'], [3, 4, 'dag'], [2, 4, 'dag'], [5, 4, 'cayir']],
     coz: [[1, 1, 'orman'], [2, 1, 'orman'], [1, 2, 'orman'], [0, 1, 'orman'], [2, 2, 'nehir'], [3, 2, 'nehir'], [4, 2, 'nehir'], [5, 2, 'sulak'], [5, 3, 'sulak'], [6, 3, 'cayir'], [3, 3, 'dag'], [3, 4, 'dag'], [2, 4, 'dag'], [4, 4, 'cayir']],
-    kural: 'Döşemeleri istediğiniz kadar değiştirebilirsiniz. Kararlar kozalakla alınır.',
+    kural: 'Döşemeleri istediğiniz kadar değiştirebilirsiniz. Önce aşağıdan Kendim, Mahallem ve Ülkem kararlarını verin, sonra dürbünle bakın.',
     kontrol: h => h.tur.every(t => t.var),
-    ipuclari: ['Önceki dokuz durumda öğrendiklerinizi düşünün: her tür neye ihtiyaç duyuyordu?', 'Masa doğru olsa bile ısınma çok yüksekse türler yaşayamaz.', 'Kozalaklarınızla Kendim, Mahallem ve Ülkem kararlarını birlikte alın.'],
+    ipuclari: ['Önceki dokuz durumda öğrendiklerinizi düşünün: her tür neye ihtiyaç duyuyordu?', 'Masa doğru olsa bile ısınma çok yüksekse türler yaşayamaz.', 'Kendim, Mahallem ve Ülkem kararlarının üçünü de doğru verin.'],
     soru: null }
 ];
 const dokun = (a, b) => G.parcalar.some(p => p.tur === a && [...p.komsu].some(k => G.parcalar[k].tur === b));
 const tekParca = (t, oran) => { const ps = G.parcalar.filter(p => p.tur === t); if (!ps.length) return false; const top = ps.reduce((x, p) => x + p.boy, 0); return Math.max(...ps.map(p => p.boy)) >= top * oran; };
 const kozalak = () => S.cozulen.size - [...S.eylem].reduce((a, id) => a + MALIYET[id], 0);
-try { JSON.parse(localStorage.getItem('zd-cozulen') || '[]').forEach(n => S.cozulen.add(n)); JSON.parse(localStorage.getItem('zd-yildiz') || '[]').forEach(n => S.yildiz.add(n)); } catch (e) {}
-const kaydet = () => { try { localStorage.setItem('zd-cozulen', JSON.stringify([...S.cozulen])); localStorage.setItem('zd-yildiz', JSON.stringify([...S.yildiz])); } catch (e) {} };
+try { JSON.parse(localStorage.getItem('zd-cozulen') || '[]').forEach(n => S.cozulen.add(n)); JSON.parse(localStorage.getItem('zd-yildiz') || '[]').forEach(n => S.yildiz.add(n)); JSON.parse(localStorage.getItem('zd-tohum') || '[]').forEach(n => S.tohum.add(n)); } catch (e) {}
+const kaydet = () => { try { localStorage.setItem('zd-cozulen', JSON.stringify([...S.cozulen])); localStorage.setItem('zd-yildiz', JSON.stringify([...S.yildiz])); localStorage.setItem('zd-tohum', JSON.stringify([...S.tohum])); } catch (e) {} };
 
 /* ---------- Renk: RGB → Lab ---------- */
 function lab([r, g, b]) {
@@ -10611,7 +10674,7 @@ function gelecekCiz(h) {
   const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); x.putImageData(out, 0, 0);
   const fs = Math.max(22, W / 22);
   x.font = `${fs}px serif`; x.textAlign = 'center'; x.textBaseline = 'middle';
-  const goster = S.d === 9 || (S.sonuc && S.sonuc.asama === 'odul');
+  const goster = S.d === 9 || (S.sonuc && (S.sonuc.asama === 'odul' || S.sonuc.asama === 'karar'));
   h.tur.forEach(t => { if (!goster || !t.var || !t.yer) return; const X = (t.yer.cx + 0.5) * cs, Y = (t.yer.cy + 0.5) * cs;
     x.fillStyle = 'rgba(255,255,255,.75)'; x.beginPath(); x.arc(X, Y, fs * 0.72, 0, 7); x.fill(); x.fillStyle = '#000'; x.fillText(t.em, X, Y + 1); });
   gelecek = c;
@@ -10639,7 +10702,7 @@ function yenile() {
   document.getElementById('yil').textContent = S.yil;
   document.getElementById('tagR').textContent = S.yil;
   const sic = document.getElementById('sic'); sic.textContent = fmt(h.T) + ' °C'; sic.className = 'temp ' + (h.T < 2 ? 'ok' : 'no');
-  const goster = S.d === 9 || (S.sonuc && S.sonuc.asama === 'odul');
+  const goster = S.d === 9 || (S.sonuc && (S.sonuc.asama === 'odul' || S.sonuc.asama === 'karar'));
   document.getElementById('species').innerHTML = !goster ? '<p class="muted" style="margin:0">Hangi canlının 2100\'de yaşadığını önce siz bulun. Doğru cevaptan sonra burada görünecek.</p>' : h.tur.map(t => `<div class="sp ${t.var ? '' : 'lost'}"><div class="em" aria-hidden="true">${t.em}</div><div><b class="${t.var ? 'ok' : 'no'}">${t.ad}: ${t.var ? 'yaşıyor' : 'yok'}</b></div></div>`).join('');
   const eksik = h.tur.filter(t => !t.var);
   const P = G.parcalar;
@@ -10647,21 +10710,29 @@ function yenile() {
     const [R, G2, B] = TUR[t].renk;
     return `<div class="hb"><span><i class="sw" style="background:rgb(${R},${G2},${B})"></i><b>${TUR[t].ad}</b></span>${b ? `<div class="bar"><i style="width:${Math.round(s / b * 100)}%"></i></div><span class="muted">%${Math.round(s / b * 100)} sağlam · ${ps.length} parça</span>` : '<span class="muted">Masada görülmedi</span>'}</div>`; }).join('');
   const n = S.eylem.size;
-  document.getElementById('birlikte').textContent = n === 3 ? 'Kendim, Mahallem ve Ülkem birlikte: ısınma 1,5 derecede duruyor.' : n ? 'Daha fazla karar, daha az ısınma. Hepsi birlikte en güçlüsü.' : (S.d < 9 ? 'Durum 1-9\'da dünya 2100\'de 2 derece ısınmış kabul ediliyor. Kararlar asıl 10. durumda önemli: orada hiçbir şey yapmazsak dünya 3 derece ısınır.' : 'Hiçbir şey yapmazsak 2100\'de dünya 3 derece ısınmış olur.');
+  document.getElementById('birlikte').textContent = n === 3 ? 'Kendim, Mahallem ve Ülkem birlikte: 2100 en serin hâlinde.' : n ? 'Her doğru karar 2100\'ü biraz daha serinletir.' : (S.d < 9 ? 'Kararlardan önce 2100\'de dünya 2 derece ısınmış. Doğru kararlar bunu düşürür.' : 'Hiçbir şey yapmazsak 2100\'de dünya 3 derece ısınmış olur.');
 }
 
 /* ---------- Kararlar ---------- */
 function kararCiz() {
-  document.getElementById('acts').innerHTML = `<p class="muted" style="margin:0">Kozalağınız: <span class="koz">${kozalak()} 🌰</span>. Her çözülen durum 1 kozalak kazandırır.</p>` + EYLEM.map(e => { const on = S.eylem.has(e.id), yok = !on && kozalak() < MALIYET[e.id];
-    return `<button class="act" type="button" data-id="${e.id}" aria-pressed="${on}" ${yok ? 'disabled' : ''}><span class="lv">${e.lv}</span><span>${e.ad}</span><small>${MALIYET[e.id]} 🌰 · Isınmayı ${String(e.etki).replace('.', ',')} derece azaltır</small></button>`; }).join('');
+  document.getElementById('acts').innerHTML = `<p class="muted" style="margin:0">Kararlar her durumda, canlıyı bulduktan sonra durum kartında verilir.</p>` + SEVIYE.map((sv, i) => { const on = S.eylem.has(sv.id);
+    return `<div class="act" aria-pressed="${on}"><span class="lv">${sv.lv}</span><span>${on ? KARAR[S.d][i][0] : 'Henüz verilmedi'}</span><small>${on ? 'Doğru karar, 2100 serinledi' : ''}</small></div>`; }).join('');
 }
 kararCiz();
-document.getElementById('acts').addEventListener('click', e => {
-  const b = e.target.closest('.act'); if (!b) return;
-  const id = b.dataset.id;
-  if (S.eylem.has(id)) S.eylem.delete(id); else if (kozalak() >= MALIYET[id]) S.eylem.add(id); else return;
-  kararCiz(); yenile(); if (S.sonuc) { kontrolEt(); durumCiz(); }
-});
+function kararBlok() {
+  const d = S.d;
+  return `<div class="karar">${SEVIYE.map((sv, s) => { const ok = S.eylem.has(sv.id), sec = S.karar[s];
+    return `<div class="kr"><b>${sv.lv}</b>${ok ? `<span class="ok">✓ ${KARAR[d][s][0]}<br><b>🌱 Gelecek kavanozuna 1 tohum atın.</b></span>` : kararSira(d, s).map(i => { const o = KARAR[d][s][i];
+      return `<button class="act" type="button" data-kr="${s}" data-ks="${i}" aria-pressed="false"><span>${i ? o[0] : o}</span>${sec === i ? `<small class="no">${o[1]}</small>` : ''}</button>`; }).join('')}</div>`; }).join('')}
+    <span class="muted">2100'de ısınma şu an <b>${fmt(sicaklik(2100))} °C</b>. Her doğru karar dürbündeki 2100'ü biraz serinletir ve kavanoza bir tohum kazandırır.</span></div>`;
+}
+function kararVer(s, i) {
+  const sv = SEVIYE[s];
+  if (i === 0) { S.eylem.add(sv.id); delete S.karar[s]; S.tohum.add(S.d + '-' + s); kaydet(); } else { S.karar[s] = i; S.yanlisVar = true; }
+  kararCiz(); yenile();
+  if (S.d < 9 && S.eylem.size === 3 && S.sonuc && S.sonuc.asama === 'karar') odulVer();
+  durumCiz();
+}
 document.getElementById('yilR').addEventListener('input', e => { S.yil = +e.target.value; yenile(); });
 
 /* ---------- Durum kartı ---------- */
@@ -10691,9 +10762,11 @@ function durumCiz() {
     const hazir = q.tip === 'canli' ? S.cevap.canli && S.cevap.yer : S.cevap.sec != null;
     alt += `${k.yanlis ? `<span class="no">${k.yanlis}</span>` : ''}<button class="btn primary" type="button" data-git="cevap" ${hazir ? '' : 'disabled'}>Cevabımız bu</button></div>`;
   }
+  if (k && k.asama === 'karar') alt = `<div class="sonuc ok" role="status"><b>Doğru! ${d.tur} 2100'de yaşıyor. Şimdi gelecek için karar verin.</b><span>Her seviyede bu sorunu gerçekten çözecek olanı seçin.</span>${kararBlok()}</div>`;
+  if (son && !(k && k.asama === 'odul')) alt = `<div class="sonuc" role="group"><b>Önce kararlarınızı verin</b>${kararBlok()}</div>` + alt;
   if (k && k.asama === 'odul') alt = `<div class="sonuc ok" role="status">
       <div class="odul"><span class="em" aria-hidden="true">${d.em}</span><b>Doğru! ${son ? 'Deniz\'in Türkiye\'si kuruldu.' : d.tur + ' 2100\'de yaşıyor.'}${yildiz ? ' ⭐ İpucusuz çözdünüz.' : ''}</b><span>${d.bilgi}</span></div>
-      <div><b>Ödülünüz</b><br>Masada: ${son ? 'Bütün pullar masada. Masanızın fotoğrafı, Deniz\'in yeni Türkiye\'si.' : `${d.pul ? `${d.em} pulunu ${TUR[S.cevap.yer].ad.toLowerCase()} döşemesinin üstüne koyun. ` : ''}1 kozalak alıp kozalak yığınınıza ekleyin.`}<br>Ekranda: ${d.em} 2100 albümüne eklendi${son ? '' : ', +1 🌰'}.</div>
+      <div><b>Ödülünüz</b><br>Masada: ${son ? `Bütün pullar masada; bu masa Deniz'in yeni Türkiye'si. <b>Final:</b> Gelecek kavanozunda ${S.tohum.size} tohum var. Her biri bugün verdiğiniz doğru bir karar. Hepsini birlikte saksıya ya da okul bahçesine ekin. Filizlendiklerinde 2100'ün Türkiye'si sizin elinizde büyümeye başlar.` : `${d.pul ? `${d.em} pulunu ${TUR[S.cevap.yer].ad.toLowerCase()} döşemesinin üstüne koyun. ` : ''}Kavanozda şimdi ${S.tohum.size} tohum var.`}<br>Ekranda: ${d.em} 2100 albümüne eklendi. Kararlarınızla 2100'de ısınma ${son ? '3,00' : '2,00'} dereceden ${fmt(sicaklik(2100))} dereceye indi.</div>
       ${son ? '' : '<button class="btn primary" type="button" data-git="sonraki">Sonraki duruma geç</button>'}
     </div>`;
   document.getElementById('durumKart').innerHTML = `
@@ -10709,19 +10782,19 @@ function durumCiz() {
     <div style="display:grid;gap:10px;min-width:0">
       <div class="plan"><span class="muted">Başlangıç: masaya böyle dizin.</span>${planSVG(d.bas)}<span class="muted">${kullanilan.map(t => TUR[t].ad).join(', ')}</span></div>
       <div class="kural"><b>2100 albümü</b><div class="album">${DURUM.map((x, i) => `<span class="${S.cozulen.has(i) ? 'on' : ''}" title="${S.cozulen.has(i) ? x.tur : 'Durum ' + (i + 1)}${S.yildiz.has(i) ? ' ⭐' : ''}">${S.cozulen.has(i) ? x.em : '?'}</span>`).join('')}</div>
-        <span class="muted">${S.cozulen.size} / 10 durum · ${S.yildiz.size} ⭐ ipucusuz</span></div>
+        <span class="muted">${S.cozulen.size} / 10 durum · ${S.yildiz.size} ⭐ ipucusuz · 🌱 ${S.tohum.size} / 30 tohum</span></div>
     </div>`;
 }
 function odulVer() {
   S.sonuc = { asama: 'odul' };
-  if (!S.cozulen.has(S.d)) { S.cozulen.add(S.d); if (S.ipucu === 0 && !S.yanlisVar) S.yildiz.add(S.d); kaydet(); kararCiz(); }
+  if (!S.cozulen.has(S.d)) { S.cozulen.add(S.d); if (S.ipucu === 0 && !S.yanlisVar) S.yildiz.add(S.d); kaydet(); }
   stripCiz();
 }
 function kontrolEt() {
   if (!S.foto) { S.sonuc = null; return; }
   const d = DURUM[S.d], h = hesap();
   const ok = !!d.kontrol(h);
-  if (ok && S.sonuc && S.sonuc.asama === 'odul') return;
+  if (ok && S.sonuc && (S.sonuc.asama === 'odul' || S.sonuc.asama === 'karar')) return;
   if (ok && d.soru && S.sonuc && S.sonuc.asama === 'soru') { hayvanBak(d); return; }
   let neden = `${d.em} ${d.tur} 2100'de hâlâ yok.`;
   if (!ok && S.d === 9) { const e = h.tur.filter(t => !t.var); neden = `${e.map(t => t.em + ' ' + t.ad).join(', ')} 2100'de yaşamıyor.${h.T >= 2 ? ' Isınma da çok yüksek.' : ''}`; }
@@ -10738,20 +10811,21 @@ function hayvanBak(d) {
 function cevapla() {
   const q = DURUM[S.d].soru;
   const dogru = q.tip === 'canli' ? S.cevap.canli === q.dogru && q.yer.includes(S.cevap.yer) : S.cevap.sec === q.dogru;
-  if (dogru) { odulVer(); yenile(); return; }
+  if (dogru) { if (S.d < 9) { S.sonuc = { asama: 'karar' }; S.karar = {}; } else odulVer(); yenile(); return; }
   S.yanlisVar = true;
   let m = 'Tam değil. Yeniden düşünün.';
   if (q.tip === 'canli') m = S.cevap.canli !== q.dogru ? 'Bu canlı burada yaşamaz. Deniz\'in mektubunu yeniden okuyun.' : 'Canlı doğru ama bu döşeme onun yaşam alanı değil.';
   S.sonuc = { asama: 'soru', yanlis: m };
 }
-function durumSec(i) { S.d = i; S.sonuc = null; S.foto = false; S.ipucu = 0; S.cevap = {}; S.yanlisVar = false; izgaraYukle(DURUM[i].bas); if (document.getElementById('izgara')) izgaraCiz(); S.img = ornekCiz(DURUM[i].bas); cozumle(S.img); yenile(); stripCiz(); durumCiz();
+function durumSec(i) { S.d = i; S.sonuc = null; S.eylem.clear(); S.karar = {}; kararCiz(); S.foto = false; S.ipucu = 0; S.cevap = {}; S.yanlisVar = false; izgaraYukle(DURUM[i].bas); if (document.getElementById('izgara')) izgaraCiz(); S.img = ornekCiz(DURUM[i].bas); cozumle(S.img); yenile(); stripCiz(); durumCiz();
   document.getElementById('durum').textContent = 'Ekranda başlangıç dizilimi var. Masayı kurup değiştirin, sonra fotoğrafını çekin.'; }
-document.getElementById('strip').addEventListener('click', e => { const b = e.target.closest('.dno'); if (!b) return; if (b.dataset.sifir) { S.cozulen.clear(); S.yildiz.clear(); S.eylem.clear(); kaydet(); kararCiz(); durumSec(0); return; } durumSec(+b.dataset.i); });
+document.getElementById('strip').addEventListener('click', e => { const b = e.target.closest('.dno'); if (!b) return; if (b.dataset.sifir) { S.cozulen.clear(); S.yildiz.clear(); S.tohum.clear(); S.eylem.clear(); kaydet(); kararCiz(); durumSec(0); return; } durumSec(+b.dataset.i); });
 document.getElementById('durumKart').addEventListener('click', e => {
   const g = e.target.closest('[data-git]')?.dataset.git, c = e.target.closest('[data-canli],[data-yer],[data-sec]');
   if (g === 'sonraki') return durumSec(Math.min(9, S.d + 1));
   if (g === 'ipucu') { S.ipucu = Math.min(3, S.ipucu + 1); return durumCiz(); }
   if (g === 'cevap') { cevapla(); return durumCiz(); }
+  const kb = e.target.closest('[data-kr]'); if (kb) return kararVer(+kb.dataset.kr, +kb.dataset.ks);
   if (c) { if (c.dataset.canli) S.cevap.canli = c.dataset.canli; if (c.dataset.yer) S.cevap.yer = c.dataset.yer; if (c.dataset.sec) S.cevap.sec = +c.dataset.sec; if (S.sonuc) S.sonuc.yanlis = null; durumCiz(); }
 });
 
