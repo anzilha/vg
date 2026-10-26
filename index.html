@@ -196,9 +196,9 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
       <li>Durumu okuyun ve masaya "Masaya böyle dizin" planındaki döşemeleri dizin.</li>
       <li>Sorunun nedenini tartışın. Hangi döşemeyi ekleyeceğinize ya da taşıyacağınıza siz karar verin. Takılırsanız ipucu alın.</li>
       <li>"Dürbünü aç" düğmesine basın, telefonu masaya tutun ve "Şimdi 2100'e bak" deyin. Dürbün 2100'e bakar. İşe yaradıysa hangi canlının geri döndüğünü ve nerede yaşadığını bulun.</li>
-      <li>Sonra gelecek için üç karar verin: Kendim, Mahallem, Ülkem. Her doğru karar dürbündeki 2100'ü serinletir ve masadaki gelecek kavanozuna bir tohum attırır.</li>
-      <li>Ödül masada hayvan pulu ve tohumlar, ekranda albüme eklenen bir tür.</li>
-      <li>Final: 10. durumdan sonra kavanozdaki tohumları birlikte saksıya ya da okul bahçesine ekin.</li>
+      <li>Sonra gelecek için üç karar verin: Kendim, Mahallem, Ülkem. Her doğru karar dürbündeki 2100'ü serinletir ve masadaki çıplak dala bir kozalak astırır.</li>
+      <li>Ödül masada hayvan pulu ve kozalaklar, ekranda albüme eklenen bir tür.</li>
+      <li>Final: 10. durumdan sonra 30 kozalakla çıplak dal bir Gelecek Ağacı'na dönüşür.</li>
     </ol>
   </section>
 </div>
@@ -10722,9 +10722,9 @@ kararCiz();
 function kararBlok() {
   const d = S.d;
   return `<div class="karar">${SEVIYE.map((sv, s) => { const ok = S.eylem.has(sv.id), sec = S.karar[s];
-    return `<div class="kr"><b>${sv.lv}</b>${ok ? `<span class="ok">✓ ${KARAR[d][s][0]}<br><b>🌱 Gelecek kavanozuna 1 tohum atın.</b></span>` : kararSira(d, s).map(i => { const o = KARAR[d][s][i];
+    return `<div class="kr"><b>${sv.lv}</b>${ok ? `<span class="ok">✓ ${KARAR[d][s][0]}<br><b>🌰 Çıplak dala 1 kozalak asın.</b></span>` : kararSira(d, s).map(i => { const o = KARAR[d][s][i];
       return `<button class="act" type="button" data-kr="${s}" data-ks="${i}" aria-pressed="false"><span>${i ? o[0] : o}</span>${sec === i ? `<small class="no">${o[1]}</small>` : ''}</button>`; }).join('')}</div>`; }).join('')}
-    <span class="muted">2100'de ısınma şu an <b>${fmt(sicaklik(2100))} °C</b>. Her doğru karar dürbündeki 2100'ü biraz serinletir ve kavanoza bir tohum kazandırır.</span></div>`;
+    <span class="muted">2100'de ısınma şu an <b>${fmt(sicaklik(2100))} °C</b>. Her doğru karar dürbündeki 2100'ü biraz serinletir ve dala bir kozalak kazandırır.</span></div>`;
 }
 function kararVer(s, i) {
   const sv = SEVIYE[s];
@@ -10766,7 +10766,7 @@ function durumCiz() {
   if (son && !(k && k.asama === 'odul')) alt = `<div class="sonuc" role="group"><b>Önce kararlarınızı verin</b>${kararBlok()}</div>` + alt;
   if (k && k.asama === 'odul') alt = `<div class="sonuc ok" role="status">
       <div class="odul"><span class="em" aria-hidden="true">${d.em}</span><b>Doğru! ${son ? 'Deniz\'in Türkiye\'si kuruldu.' : d.tur + ' 2100\'de yaşıyor.'}${yildiz ? ' ⭐ İpucusuz çözdünüz.' : ''}</b><span>${d.bilgi}</span></div>
-      <div><b>Ödülünüz</b><br>Masada: ${son ? `Bütün pullar masada; bu masa Deniz'in yeni Türkiye'si. <b>Final:</b> Gelecek kavanozunda ${S.tohum.size} tohum var. Her biri bugün verdiğiniz doğru bir karar. Hepsini birlikte saksıya ya da okul bahçesine ekin. Filizlendiklerinde 2100'ün Türkiye'si sizin elinizde büyümeye başlar.` : `${d.pul ? `${d.em} pulunu ${TUR[S.cevap.yer].ad.toLowerCase()} döşemesinin üstüne koyun. ` : ''}Kavanozda şimdi ${S.tohum.size} tohum var.`}<br>Ekranda: ${d.em} 2100 albümüne eklendi. Kararlarınızla 2100'de ısınma ${son ? '3,00' : '2,00'} dereceden ${fmt(sicaklik(2100))} dereceye indi.</div>
+      <div><b>Ödülünüz</b><br>Masada: ${son ? `Bütün pullar masada; bu masa Deniz'in yeni Türkiye'si. <b>Final:</b> Masadaki dalda ${S.tohum.size} kozalak var. Her biri bugün verdiğiniz doğru bir karar. Kuru bir dal olarak başladı; şimdi sizin kararlarınızla büyüyen Gelecek Ağacı. 2100'ün Türkiye'si bu ağacın gölgesinde.${S.tohum.size < 30 ? ' Eksik kalan kozalaklar, yanlış verilen kararlar. Durumlara dönüp tamamlayabilirsiniz.' : ''}` : `${d.pul ? `${d.em} pulunu ${TUR[S.cevap.yer].ad.toLowerCase()} döşemesinin üstüne koyun. ` : ''}Dalda şimdi ${S.tohum.size} kozalak var.`}<br>Ekranda: ${d.em} 2100 albümüne eklendi. Kararlarınızla 2100'de ısınma ${son ? '3,00' : '2,00'} dereceden ${fmt(sicaklik(2100))} dereceye indi.</div>
       ${son ? '' : '<button class="btn primary" type="button" data-git="sonraki">Sonraki duruma geç</button>'}
     </div>`;
   document.getElementById('durumKart').innerHTML = `
@@ -10782,7 +10782,7 @@ function durumCiz() {
     <div style="display:grid;gap:10px;min-width:0">
       <div class="plan"><span class="muted">Başlangıç: masaya böyle dizin.</span>${planSVG(d.bas)}<span class="muted">${kullanilan.map(t => TUR[t].ad).join(', ')}</span></div>
       <div class="kural"><b>2100 albümü</b><div class="album">${DURUM.map((x, i) => `<span class="${S.cozulen.has(i) ? 'on' : ''}" title="${S.cozulen.has(i) ? x.tur : 'Durum ' + (i + 1)}${S.yildiz.has(i) ? ' ⭐' : ''}">${S.cozulen.has(i) ? x.em : '?'}</span>`).join('')}</div>
-        <span class="muted">${S.cozulen.size} / 10 durum · ${S.yildiz.size} ⭐ ipucusuz · 🌱 ${S.tohum.size} / 30 tohum</span></div>
+        <span class="muted">${S.cozulen.size} / 10 durum · ${S.yildiz.size} ⭐ ipucusuz · 🌰 ${S.tohum.size} / 30 kozalak</span></div>
     </div>`;
 }
 function odulVer() {
