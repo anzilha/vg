@@ -125,7 +125,7 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
 <body>
 <div class="wrap">
   <header>
-    <h1>Zaman Dürbünü <small id="surum" style="font:600 12px/1 var(--f-body, sans-serif);opacity:.6;vertical-align:middle">Sürüm 11 · 28 Ekim</small></h1>
+    <h1>Zaman Dürbünü <small id="surum" style="font:600 12px/1 var(--f-body, sans-serif);opacity:.6;vertical-align:middle">Sürüm 12 · 28 Ekim</small></h1>
     <p>Deniz 2100'den 10 durum gönderdi. Her durumu masada Cascadia döşemeleriyle düzeltin, fotoğrafını çekin. Dürbün çözümünüzün 2100'de işe yarayıp yaramadığını gösterir.</p>
   </header>
 
@@ -10900,7 +10900,7 @@ function bas(t) {
 }
 const fmt = n => n.toFixed(2).replace('.', ',');
 function yenile() {
-  const h = hesap(); gelecekCiz(h); bas();
+  const h = hesap(); gelecekCiz(h); bas(); if (typeof kararBlok === 'function') kararCiz();
   document.getElementById('yil').textContent = S.yil;
   document.getElementById('tagR').textContent = S.yil;
   const sic = document.getElementById('sic'); sic.textContent = fmt(h.T) + ' °C'; sic.className = 'temp ' + (h.T < 2 ? 'ok' : 'no');
@@ -10917,7 +10917,11 @@ function yenile() {
 
 /* ---------- Kararlar ---------- */
 function kararCiz() {
-  document.getElementById('acts').innerHTML = `<p class="muted" style="margin:0">Kararlar her durumda, canlıyı bulduktan sonra durum kartında verilir.</p>` + SEVIYE.map((sv, i) => { const on = S.eylem.has(sv.id);
+  const el = document.getElementById('acts'), as = S.sonuc && S.sonuc.asama;
+  // Karar sırası geldiyse seçenekler burada da dokunulabilir; gelmediyse ne yapılacağı yazılır
+  if (as === 'karar' || (S.d === 9 && as !== 'odul')) { el.innerHTML = `<p class="muted" style="margin:0">Her seviyede bu sorunu gerçekten çözecek olanı seçin.</p>` + kararBlok(); return; }
+  const kilit = as === 'odul' ? '' : `<p class="muted" style="margin:0">🔒 Kararlar, dürbünle doğru canlıyı doğru döşemede bulunca açılır. Önce durum kartındaki soruyu çözün.</p>`;
+  el.innerHTML = kilit + SEVIYE.map((sv, i) => { const on = S.eylem.has(sv.id);
     return `<div class="act" aria-pressed="${on}"><span class="lv">${sv.lv}</span><span>${on ? KARAR[S.d][i][0] : 'Henüz verilmedi'}</span><small>${on ? 'Doğru karar, 2100 serinledi' : ''}</small></div>`; }).join('');
 }
 kararCiz();
@@ -11022,6 +11026,7 @@ function cevapla() {
 function durumSec(i) { S.d = i; S.sonuc = null; S.eylem.clear(); S.karar = {}; S.kararYanlis = new Set(); kararCiz(); S.foto = false; S.ipucu = 0; S.cevap = {}; S.yanlisVar = false; izgaraYukle(DURUM[i].bas); if (document.getElementById('izgara')) izgaraCiz(); S.img = ornekCiz(DURUM[i].bas); cozumle(S.img); yenile(); stripCiz(); durumCiz();
   document.getElementById('durum').textContent = 'Ekranda başlangıç dizilimi var. Masayı kurup değiştirin, sonra fotoğrafını çekin.'; }
 document.getElementById('strip').addEventListener('click', e => { const b = e.target.closest('.dno'); if (!b) return; if (b.dataset.sifir) { S.cozulen.clear(); S.yildiz.clear(); S.tohum.clear(); S.eylem.clear(); kaydet(); kararCiz(); durumSec(0); return; } durumSec(+b.dataset.i); });
+document.getElementById('acts').addEventListener('click', e => { const kb = e.target.closest('[data-kr]'); if (kb) kararVer(+kb.dataset.kr, +kb.dataset.ks); });
 document.getElementById('durumKart').addEventListener('click', e => {
   const g = e.target.closest('[data-git]')?.dataset.git, c = e.target.closest('[data-canli],[data-yer],[data-sec]');
   if (g === 'sonraki') return durumSec(Math.min(9, S.d + 1));
