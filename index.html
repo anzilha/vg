@@ -10977,11 +10977,36 @@ function qrMasa(w, h, dos) {
   });
   return { c, gen: gen / sc };
 }
+function pulAltRengi(kare, a) {
+  const x = kare.getContext('2d', { willReadFrequently: true }), say = {};
+  const ref = HAB.map(t => [t, lab(VARSAYILAN[t].renk)]);
+  for (let k = 0; k < 48; k++) {
+    const aci = k * Math.PI / 24;
+    for (const r of [1.3, 1.45, 1.6]) {
+      const px = Math.round(a.x + Math.cos(aci) * r * a.b), py = Math.round(a.y + Math.sin(aci) * r * a.b);
+      if (px < 0 || py < 0 || px >= kare.width || py >= kare.height) continue;
+      const d = x.getImageData(px, py, 1, 1).data, L = lab([d[0], d[1], d[2]]);
+      if (L[0] > 90 || L[0] < 18) continue;
+      let en = null, ed = 45;
+      ref.forEach(([t, R]) => { const m = Math.hypot(R[0] - L[0], R[1] - L[1], R[2] - L[2]); if (m < ed) { ed = m; en = t; } });
+      if (en) say[en] = (say[en] || 0) + 1;
+    }
+  }
+  const en = Object.entries(say).sort((p, q) => q[1] - p[1])[0];
+  return en && en[1] >= 8 ? en[0] : null;
+}
 async function qrIleBak(kare) {
   const kodlar = await qrBul(kare), { dos, hay } = qrAyir(kodlar);
   S.qrHayvanSay = hay.length;
   if (!dos.length) return false;
   for (const k in TUR) TUR[k].renk = VARSAYILAN[k].renk.slice(); labYenile();
+  // Pul döşemenin QR'ını kapatmışsa: pulun çevresindeki renge bakıp altındaki döşemeyi tanı
+  hay.forEach(a => {
+    const yakin = Math.min(...dos.map(d => Math.hypot(d.x - a.x, d.y - a.y)));
+    if (yakin < a.b * 2.2) return;
+    const tur = pulAltRengi(kare, a);
+    if (tur) dos.push({ deger: 'pul-alti', x: a.x, y: a.y, b: a.b, tur });
+  });
   const { c, gen } = qrMasa(kare.width, kare.height, dos);
   // hayvan pulunu en yakın döşemeye bağla
   S.qrHayvan = hay.map(a => { let en = null, ed = Infinity; dos.forEach(d => { const m = Math.hypot(d.x - a.x, d.y - a.y); if (m < ed) { ed = m; en = d; } }); return { em: a.em, tur: en && ed < gen * 0.9 ? en.tur : null }; });
