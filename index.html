@@ -131,6 +131,9 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
 #acilis li::before { content: counter(k); width: 26px; height: 26px; border-radius: 50%; background: #e08a3c; color: #1a1208; font: 800 14px/26px var(--f-body); text-align: center; }
 #acilis .not { margin: 0; padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,.07); color: #d7e2d6; font-size: 15px; }
 #acilis .btn.primary { justify-self: stretch; font-size: 18px; padding: 16px; background: #e08a3c; color: #1a1208; }
+.dilSec { display: flex; gap: 8px; }
+.dilSec button { flex: 1; padding: 10px; border-radius: 10px; border: 2px solid rgba(255,255,255,.3); background: transparent; color: inherit; font: 700 16px var(--f-body); cursor: pointer; }
+.dilSec button[aria-pressed="true"] { background: #fff; color: #13201a; border-color: #fff; }
 .kurallarBtn { background: none; border: 0; color: var(--accent); font: 700 14px var(--f-body); cursor: pointer; padding: 4px 0; text-decoration: underline; vertical-align: middle; }
 </style>
 
@@ -138,24 +141,25 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
 <body>
 <div id="acilis" role="dialog" aria-modal="true" aria-labelledby="acilisBaslik">
   <div class="ic">
+    <div class="dilSec" role="group" aria-label="Dil / Language"><button type="button" data-dil="tr" aria-pressed="true">Türkçe</button><button type="button" data-dil="en" aria-pressed="false">English</button></div>
     <div class="logo" aria-hidden="true">🔭</div>
-    <h1 id="acilisBaslik">Zaman Dürbünü</h1>
-    <p class="alt">Deniz 2100'den yazıyor. Geleceği bugünden birlikte kurtarın.</p>
+    <h1 id="acilisBaslik" data-en="Time Telescope">Zaman Dürbünü</h1>
+    <p class="alt" data-en="Deniz is writing from 2100. Save the future together, starting today.">Deniz 2100'den yazıyor. Geleceği bugünden birlikte kurtarın.</p>
     <ol>
-      <li>Deniz'in durumunu okuyun: 2100'de bir canlı yok olmuş.</li>
-      <li>Döşemeleri masaya dizin; canlının yaşayacağı yeri birlikte kurun.</li>
-      <li>Canlının pulunu, QR yüzü üstte, döşemenin sivri alt ucuna koyun.</li>
-      <li>Dürbünle masanın fotoğrafını çekin, perdeyi kaydırıp 2100'e bakın.</li>
-      <li>Canlı yaşıyorsa Kendim, Mahallem ve Ülkem kararlarını verin. İlk denemede doğru her karar Gelecek Ağacı'na bir kozalak taktırır.</li>
+      <li data-en="Read Deniz’s situation: an animal has disappeared by 2100.">Deniz'in durumunu okuyun: 2100'de bir canlı yok olmuş.</li>
+      <li data-en="Lay the tiles on the table and build, together, a place where the animal can live.">Döşemeleri masaya dizin; canlının yaşayacağı yeri birlikte kurun.</li>
+      <li data-en="Put the animal’s token, QR side up, on the pointed bottom end of a tile.">Canlının pulunu, QR yüzü üstte, döşemenin sivri alt ucuna koyun.</li>
+      <li data-en="Take a photo of the table with the telescope, then slide the curtain to look at 2100.">Dürbünle masanın fotoğrafını çekin, perdeyi kaydırıp 2100'e bakın.</li>
+      <li data-en="If the animal is alive, make the Myself, My neighbourhood and My country decisions. Every decision that is right on the first try puts a pine cone on the Future Tree.">Canlı yaşıyorsa Kendim, Mahallem ve Ülkem kararlarını verin. İlk denemede doğru her karar Gelecek Ağacı'na bir kozalak taktırır.</li>
     </ol>
-    <p class="not">Herkes aynı takımda, rakip yok. 10 durumun sonunda ağacınız ne kadar dolu?</p>
-    <button class="btn primary" type="button" id="basla">Başla</button>
+    <p class="not" data-en="Everyone is on the same team; there are no rivals. How full will your tree be after 10 situations?">Herkes aynı takımda, rakip yok. 10 durumun sonunda ağacınız ne kadar dolu?</p>
+    <button class="btn primary" type="button" id="basla" data-en="Start">Başla</button>
   </div>
 </div>
 <div class="wrap">
   <header>
-    <h1>Zaman Dürbünü <button class="kurallarBtn" type="button" id="kurallar">Kurallar</button> <small id="surum" style="font:600 12px/1 var(--f-body, sans-serif);opacity:.6;vertical-align:middle">Sürüm 14 · 28 Ekim</small></h1>
-    <p>Deniz 2100'den 10 durum gönderdi. Her durumu masada döşemelerle düzeltin, fotoğrafını çekin. Dürbün çözümünüzün 2100'de işe yarayıp yaramadığını gösterir.</p>
+    <h1><span data-en="Time Telescope">Zaman Dürbünü</span> <button class="kurallarBtn" type="button" id="kurallar" data-en="Rules">Kurallar</button> <button class="kurallarBtn" type="button" id="dilBtn">English</button> <small id="surum" style="font:600 12px/1 var(--f-body, sans-serif);opacity:.6;vertical-align:middle" data-en="Version 15 · 28 Oct">Sürüm 15 · 28 Ekim</small></h1>
+    <p data-en="Deniz sent 10 situations from 2100. Fix each one on the table with the tiles and take a photo. The telescope shows whether your solution works in 2100.">Deniz 2100'den 10 durum gönderdi. Her durumu masada döşemelerle düzeltin, fotoğrafını çekin. Dürbün çözümünüzün 2100'de işe yarayıp yaramadığını gösterir.</p>
   </header>
 
   <section class="card durum-kart" aria-label="Durumlar">
@@ -164,11 +168,11 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
   </section>
 
   <details class="card" aria-label="Masayı ekrana aktarın" hidden>
-    <summary class="aktar-ust"><h2 style="display:inline">Kamera yoksa: masayı ekrana aktarın</h2> <span class="muted" id="degisim"></span></summary>
-    <p class="muted" style="margin:0">Masada yaptığınız değişikliği burada da yapın: önce bir döşeme türü seçin, sonra altıgene dokunun. Fotoğraf çalışıyorsa bunun yerine aşağıdan fotoğraf da çekebilirsiniz.</p>
+    <summary class="aktar-ust"><h2 style="display:inline" data-en="No camera? Copy the table to the screen">Kamera yoksa: masayı ekrana aktarın</h2> <span class="muted" id="degisim"></span></summary>
+    <p class="muted" style="margin:0" data-en="Make the same change here that you made on the table: first choose a tile type, then tap a hexagon. If photos work, you can take a photo below instead.">Masada yaptığınız değişikliği burada da yapın: önce bir döşeme türü seçin, sonra altıgene dokunun. Fotoğraf çalışıyorsa bunun yerine aşağıdan fotoğraf da çekebilirsiniz.</p>
     <div class="secim" id="palet" role="group" aria-label="Döşeme türü"></div>
     <div class="izgara-kap"><svg id="izgara" role="img" aria-label="Masanın ekrandaki eşi"></svg></div>
-    <div class="row"><button class="btn primary" type="button" id="bak">Dürbünle 2100'e bak</button><button class="btn" type="button" id="geri">Başlangıca dön</button></div>
+    <div class="row"><button class="btn primary" type="button" id="bak" data-en="Look at 2100 with the telescope">Dürbünle 2100'e bak</button><button class="btn" type="button" id="geri" data-en="Back to the start">Başlangıca dön</button></div>
     <p class="no" id="kuralUyari" role="status" style="margin:0"></p>
   </details>
 
@@ -176,15 +180,15 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
     <div class="view" id="view">
       <canvas id="ekran" width="800" height="560" aria-label="Solda bugünkü masa, sağda 2100 yılındaki hâli"></canvas>
       <video id="canli" playsinline muted hidden></video>
-      <span class="tag l">Bugün</span><span class="tag r" id="tagR">2100</span>
+      <span class="tag l" data-en="Today">Bugün</span><span class="tag r" id="tagR">2100</span>
     </div>
     <div class="lens-bar">
       <div class="row">
-        <button class="btn primary" type="button" id="canliBtn">Dürbünü aç</button>
-        <button class="btn primary" type="button" id="bakBtn" hidden>Şimdi 2100'e bak</button>
-        <label class="btn file">Fotoğraf çek<input id="foto" type="file" accept="image/*" capture="environment" aria-label="Kamerayla masanın fotoğrafını çek"></label>
-        <label class="btn file">Galeriden seç<input id="galeri" type="file" accept="image/*" aria-label="Galeriden masanın fotoğrafını seç"></label>
-        <button class="btn" id="ornek" type="button">Başlangıcı ekranda göster</button>
+        <button class="btn primary" type="button" id="canliBtn" data-en="Open the telescope">Dürbünü aç</button>
+        <button class="btn primary" type="button" id="bakBtn" hidden data-en="Look at 2100 now">Şimdi 2100'e bak</button>
+        <label class="btn file"><span data-en="Take a photo">Fotoğraf çek</span><input id="foto" type="file" accept="image/*" capture="environment" aria-label="Kamerayla masanın fotoğrafını çek"></label>
+        <label class="btn file"><span data-en="Choose from gallery">Galeriden seç</span><input id="galeri" type="file" accept="image/*" aria-label="Galeriden masanın fotoğrafını seç"></label>
+        <button class="btn" id="ornek" type="button" data-en="Show the starting layout">Başlangıcı ekranda göster</button>
       </div>
       <span id="durum">Masayı kurup fotoğrafını çekin.</span>
     </div>
@@ -193,42 +197,42 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
   <div class="grid2">
     <section class="card">
       <div class="year">
-        <div class="year-top"><h2>Zaman</h2><span class="big" id="yil">2100</span></div>
+        <div class="year-top"><h2 data-en="Time">Zaman</h2><span class="big" id="yil">2100</span></div>
         <input id="yilR" type="range" min="2025" max="2100" step="5" value="2100" aria-label="Yıl">
-        <div class="year-top"><span class="muted">Dünyanın sıcaklığı, sanayi öncesine göre</span><span class="temp" id="sic"></span></div>
+        <div class="year-top"><span class="muted" data-en="World temperature compared with pre-industrial times">Dünyanın sıcaklığı, sanayi öncesine göre</span><span class="temp" id="sic"></span></div>
       </div>
-      <h2>Gelecek için kararlarımız</h2>
+      <h2 data-en="Our decisions for the future">Gelecek için kararlarımız</h2>
       <div class="acts" id="acts"></div>
       <p class="muted" id="birlikte"></p>
     </section>
 
     <section class="card">
-      <h2>Dürbün ne görüyor?</h2>
+      <h2 data-en="What does the telescope see?">Dürbün ne görüyor?</h2>
       <div class="species" id="species"></div>
     </section>
   </div>
 
   <section class="card">
-    <h2>Yaşam alanları 2100'de</h2>
+    <h2 data-en="Habitats in 2100">Yaşam alanları 2100'de</h2>
     <div class="habitat" id="habitat"></div>
     <details id="cal">
-      <summary>Döşeme renklerini dürbüne tanıtın</summary>
-      <p class="muted">Sınıfın ışığı renkleri değiştirebilir. Kendi fotoğrafınızı çektikten sonra aşağıdan bir döşeme türü seçin, sonra fotoğrafın sol yarısında o türden bir döşemeye dokunun. Her tür için bir kez yeterli. "Masa" da döşeme olmayan zemindir.</p>
+      <summary data-en="Teach the telescope the tile colours">Döşeme renklerini dürbüne tanıtın</summary>
+      <p class="muted" data-en="Classroom light can change colours. After taking your own photo, choose a tile type below, then tap a tile of that type in the left half of the photo. Once per type is enough. “Table” is the background that is not a tile.">Sınıfın ışığı renkleri değiştirebilir. Kendi fotoğrafınızı çektikten sonra aşağıdan bir döşeme türü seçin, sonra fotoğrafın sol yarısında o türden bir döşemeye dokunun. Her tür için bir kez yeterli. "Masa" da döşeme olmayan zemindir.</p>
       <div class="cal-chips" id="chips"></div>
       <p class="muted" id="calDurum"></p>
     </details>
   </section>
 
   <section class="card">
-    <h2>Nasıl oynanır?</h2>
+    <h2 data-en="How to play">Nasıl oynanır?</h2>
     <ol class="steps">
-      <li>Durumu okuyun ve masaya "Masaya böyle dizin" planındaki döşemeleri dizin.</li>
-      <li>Sorunun nedenini tartışın. Hangi döşemeyi ekleyeceğinize ya da taşıyacağınıza siz karar verin. Takılırsanız ipucu alın.</li>
-      <li>"Dürbünü aç" düğmesine basın, telefonu masaya tutun ve "Şimdi 2100'e bak" deyin. Dürbün 2100'e bakar. İşe yaradıysa hangi canlının geri döndüğünü ve nerede yaşadığını bulun.</li>
-      <li>Sonra gelecek için üç karar verin: Kendim, Mahallem, Ülkem. Her doğru karar dürbündeki 2100'ü serinletir. İlk denemede doğru verilen karar masadaki kuru dala bir kozalak taktırır.</li>
-      <li>Ağaçta 25 yer var: 1. durum deneme turudur, kozalak vermez. 2-9. durumlarda her karar 1 kozalak (24). 10. durumda üç karar da ilk denemede doğruysa 25. kozalak ağacın tepesine takılır.</li>
-      <li>Ödül masada hayvan pulu ve kozalaklar, ekranda albüme eklenen bir tür.</li>
-      <li>Final: 10. durumdan sonra kuru dal kozalaklarla bir Gelecek Ağacı'na dönüşür. Boş kalan yerler, ilk denemede yanlış verilen kararları gösterir.</li>
+      <li data-en="Read the situation and lay out the tiles shown in the “Start: lay out the table like this” plan.">Durumu okuyun ve masaya "Masaya böyle dizin" planındaki döşemeleri dizin.</li>
+      <li data-en="Discuss the cause of the problem. You decide which tile to add or move. If you get stuck, take a hint.">Sorunun nedenini tartışın. Hangi döşemeyi ekleyeceğinize ya da taşıyacağınıza siz karar verin. Takılırsanız ipucu alın.</li>
+      <li data-en="Press “Open the telescope”, hold the phone over the table and press “Look at 2100 now”. The telescope looks at 2100. If your change worked, find out which animal came back and where it lives.">"Dürbünü aç" düğmesine basın, telefonu masaya tutun ve "Şimdi 2100'e bak" deyin. Dürbün 2100'e bakar. İşe yaradıysa hangi canlının geri döndüğünü ve nerede yaşadığını bulun.</li>
+      <li data-en="Then make three decisions for the future: Myself, My neighbourhood, My country. Each right decision cools 2100 in the telescope. A decision that is right on the first try puts a pine cone on the dry branch on the table.">Sonra gelecek için üç karar verin: Kendim, Mahallem, Ülkem. Her doğru karar dürbündeki 2100'ü serinletir. İlk denemede doğru verilen karar masadaki kuru dala bir kozalak taktırır.</li>
+      <li data-en="The tree has 25 spots. Situation 1 is a practice round and gives no pine cones. In situations 2-9, each decision gives 1 pine cone (24). In situation 10, if all three decisions are right on the first try, the 25th pine cone goes on top of the tree.">Ağaçta 25 yer var: 1. durum deneme turudur, kozalak vermez. 2-9. durumlarda her karar 1 kozalak (24). 10. durumda üç karar da ilk denemede doğruysa 25. kozalak ağacın tepesine takılır.</li>
+      <li data-en="The reward: an animal token and pine cones on the table, and a species added to the album on the screen.">Ödül masada hayvan pulu ve kozalaklar, ekranda albüme eklenen bir tür.</li>
+      <li data-en="Final: after situation 10, the dry branch becomes a Future Tree full of pine cones. Empty spots show decisions that were not right on the first try.">Final: 10. durumdan sonra kuru dal kozalaklarla bir Gelecek Ağacı'na dönüşür. Boş kalan yerler, ilk denemede yanlış verilen kararları gösterir.</li>
     </ol>
   </section>
 </div>
@@ -10353,6 +10357,9 @@ const TUR = {
   masa:  { ad: 'Masa', renk: [201, 162, 122] }
 };
 const HAB = ['orman', 'nehir', 'sulak', 'cayir', 'dag'];
+/* ---------- Dil: Türkçe / English ---------- */
+let DIL = 'tr'; try { if (localStorage.getItem('zd-dil') === 'en') DIL = 'en'; } catch (e) {}
+const L = (tr, en) => DIL === 'en' ? en : tr;
 
 const EYLEM = [
   { id: 'ben', lv: 'Kendim', ad: 'Okula yürüyerek ya da toplu taşımayla gidiyorum, evde enerjiyi boşa harcamıyoruz.', etki: 0.3 },
@@ -10420,7 +10427,7 @@ const kararSira = (d, s) => [0, 1, 2].map(k => (k + d + s * 2) % 3);
 
 /* ---------- 10 durum ---------- */
 // Altıgen konumları [sütun, satır, tür]; tek satırlar yarım döşeme sağa kayar.
-const HAVUZ = 'Her türden döşeme kullanabilirsiniz. En fazla 2 değişiklik yapın: bir döşeme eklemek ya da bir döşemenin yerini değiştirmek bir değişiktir.';
+let HAVUZ = 'Her türden döşeme kullanabilirsiniz. En fazla 2 değişiklik yapın: bir döşeme eklemek ya da bir döşemenin yerini değiştirmek bir değişiktir.';
 const CANLI = [['🐟', 'İnci kefali'], ['🐻', 'Boz ayı'], ['🐦', 'Kelaynak'], ['🐐', 'Yaban keçisi'], ['🐏', 'Anadolu yaban koyunu']];
 const DURUM = [
   { ad: 'Sessiz dereler', yer: 'Van Gölü', em: '🐟', pul: true, tur: 'İnci kefali',
@@ -10509,6 +10516,122 @@ const dokun = (a, b) => G.parcalar.some(p => p.tur === a && [...p.komsu].some(k 
 const tekParca = (t, oran) => { const ps = G.parcalar.filter(p => p.tur === t); if (!ps.length) return false; const top = ps.reduce((x, p) => x + p.boy, 0); return Math.max(...ps.map(p => p.boy)) >= top * oran; };
 const kozalak = () => S.cozulen.size - [...S.eylem].reduce((a, id) => a + MALIYET[id], 0);
 try { JSON.parse(localStorage.getItem('zd-cozulen') || '[]').forEach(n => S.cozulen.add(n)); JSON.parse(localStorage.getItem('zd-yildiz') || '[]').forEach(n => S.yildiz.add(n)); JSON.parse(localStorage.getItem('zd-tohum') || '[]').forEach(n => { if (n === 'tepe' || /^[1-8]-[0-2]$/.test(n)) S.tohum.add(n); }); } catch (e) {}
+/* ---------- English: kararlar, durumlar ve adlar (Türkçeyle aynı sırada) ---------- */
+const KARAR_EN = [
+  [ // 1 Lake Van
+    ["I do not fish at stream mouths during the spring migration, and I warn people who do.", ["I release my aquarium fish into Lake Van.", "Fish from somewhere else can harm the species in the lake."], ["I cycle to school.", "It helps against warming, but it does not help the mullet reach the stream."]],
+    ["We ask the municipality to build a fish pass next to the weir on the stream.", ["We build a new picnic area on the lakeshore.", "It brings people and litter to the shore and does not open the mullet’s way."], ["We plant pine trees in the school garden.", "Planting trees is good, but it does not remove the barrier in the mullet’s way."]],
+    ["No new weirs are built on the streams where the mullet migrates, and the fishing ban is respected.", ["Freshwater fish from other places are brought into Lake Van.", "New fish compete with the mullet and make the problem bigger."], ["Big hotels are built on the lakeshore.", "The shore is covered in concrete, and the places where streams reach the lake are damaged."]]
+  ],
+  [ // 2 Black Sea
+    ["I leave no food or rubbish in the forest, so bears do not get used to people.", ["If I see a bear cub, I take it home and feed it.", "A cub separated from its mother cannot survive in the wild."], ["I drive deep into the forest to see bears.", "Car noise disturbs the bears and does not protect the forest."]],
+    ["Instead of a new road that cuts the forest in two, we ask for the old road to be widened.", ["We collect the village rubbish in an open area at the edge of the forest.", "An open dump attracts bears; that is exactly what Deniz described."], ["We open a big campsite at the edge of the forest.", "A campsite makes the forest even smaller."]],
+    ["Wildlife bridges are built over the roads that cut through forests.", ["More roads are built through forests to make travel easier.", "Every new road cuts the forest once more."], ["A big park is built in the city to replace the cut forest.", "A bear cannot live in a city park; it needs a large, unbroken forest."]]
+  ],
+  [ // 3 Birecik
+    ["We do not use pesticides in our garden.", ["I throw bread to the birds every day.", "Bread is not natural food for birds and can make them sick."], ["I climb the cliffs to photograph the nests up close.", "The birds get scared and may abandon the nest."]],
+    ["We oppose draining the marsh near the town to turn it into fields.", ["We build a concrete walkway along the Euphrates.", "Concrete destroys the home of small creatures on the shore."], ["We build a big viewing terrace next to the cliffs.", "Crowds scare the birds and do not solve the food problem."]],
+    ["Wetlands cannot be drained, and the places where the ibis feeds are protected.", ["The ibises are always kept in cages and never released.", "A cage keeps the species alive, but not in the wild."], ["A new dam is built on the Euphrates.", "A dam floods the wetlands along the shore."]]
+  ],
+  [ // 4 Bozdağ
+    ["On Bozdağ I never drive an off-road vehicle off the tracks.", ["If I find a mouflon lamb, I raise it at home.", "A lamb separated from its herd cannot survive in the wild."], ["I pick steppe flowers and put them in a vase.", "It reduces the steppe plants and does not open the mouflon’s escape route."]],
+    ["We ask for gaps in the wire fence between the steppe and the mountain, so animals can pass.", ["We plant fast-growing trees on the steppe.", "If the steppe turns into forest, the mouflon cannot graze. Each ecosystem is healthy with its own plants."], ["We support opening a quarry at the foot of the mountain.", "A quarry destroys the rocks where the mouflon takes shelter."]],
+    ["Bozdağ and the steppe around it are declared one protected area together.", ["The steppes are ploughed, irrigated and turned into fields.", "The place where the mouflon grazes disappears."], ["The mouflons are moved to zoos.", "A zoo has no mountain to escape to and no steppe to graze on."]]
+  ],
+  [ // 5 Manavgat
+    ["I do not light fires in the forest or leave glass bottles and rubbish there.", ["When I see a fire, I first film it and share the video.", "You must call 112 first; every minute counts."], ["I use the air conditioner less at home.", "It helps against warming, but it does not protect the forest from fire this summer."]],
+    ["We protect the trees and reeds along the stream and oppose pouring concrete there.", ["We build new summer houses at the edge of the forest.", "Houses bring sparks and people into the forest."], ["We pile up cut dry branches in the forest and leave them.", "A pile of dry branches is fuel for a fire."]],
+    ["Streams and wetlands next to forests are protected, and more fire lookout towers are built.", ["Burnt forest land is opened for building.", "This makes burning forests profitable."], ["The water of the streams is piped to the cities.", "If the stream dries up, the forest loses its moisture and burns more easily."]]
+  ],
+  [ // 6 Taurus Mountains
+    ["On mountain walks I stay on the path and do not chase the goats.", ["I take salt and bread to the goats.", "Wild animals get used to people and can get sick."], ["I save electricity at home.", "It helps against warming, but it does not reconnect the divided cliffs."]],
+    ["As a village, we object to the quarry that would split the mountain in two.", ["We ask for a cable car to the top of the mountain.", "The cable car and the crowds scare the herds."], ["We open a new village road at the foot of the mountain.", "A new road divides the cliffs once more."]],
+    ["The mountains where the wild goat lives become one whole protected area, not separate pieces.", ["Each mountain gets its own mining permit.", "Mines break the mountains into small islands."], ["More wild goat hunting is allowed.", "Herds that are already shrinking become even smaller."]]
+  ],
+  [ // 7 Lake Akşehir
+    ["I save water at home and do not leave the tap running.", ["I plant a lawn in the garden and water it with a hose every day.", "In a dry region, a lawn needs a lot of water."], ["We wash the car with a hose every week.", "It wastes water that should feed the lake."]],
+    ["We switch from flood irrigation to drip irrigation in the fields.", ["We dig new wells and pump more water.", "Groundwater drops and the lake dries even more."], ["We grow more crops that need a lot of water.", "More water goes to the fields and none reaches the lake."]],
+    ["By law, part of the streams’ water is kept for the lake.", ["The dried lake bed is turned into fields.", "The lake loses any chance to come back."], ["Water is piped from another river basin to the fields.", "The problem moves somewhere else, and the stream still does not reach the lake."]]
+  ],
+  [ // 8 Migration corridor
+    ["I plant native trees and flowers in our garden, so small creatures have a place to pass through.", ["We pull out the bushes in the garden and cover everything with concrete.", "Concrete blocks the way of small creatures."], ["I catch butterflies for a collection.", "It reduces migrating creatures and does not open their way."]],
+    ["We plant trees on the empty land between the forest and the mountain to make a green corridor.", ["We build a big car park between two forests.", "The car park separates the forests from each other."], ["We plant all the saplings in one place, the school garden.", "The garden becomes green, but the forest and the mountain are still not connected."]],
+    ["Green corridors between forests and mountains are put on the map and protected.", ["New motorways are built through the forests.", "A motorway cuts the migration route."], ["Animals suffering from the heat are taken to the mountains in lorries.", "We cannot carry every insect and small creature; they need their own way."]]
+  ],
+  [ // 9 Kaz Mountains
+    ["I join the tree planting around the source of the stream.", ["I wash cars next to the stream.", "It pollutes the stream and does not add water."], ["I make a campfire with wood cut from the forest.", "It supports tree cutting and carries a fire risk."]],
+    ["Together we object to cutting the forest at the stream’s source to open a mine.", ["We ask for a concrete channel in the stream bed.", "In a concrete channel, water rushes away fast and the stream dries up again in summer."], ["We plant flowers in the town square to replace the cut forest.", "The square looks nicer, but the soil that feeds the stream does not come back."]],
+    ["Forests around stream sources cannot be cut, and mining there is banned.", ["New dams are built so the streams do not dry up.", "A dam holds water, but it cannot replace the forest that feeds the source."], ["Forests are cut down and replaced with solar panels.", "Solar energy is good, but it belongs on rooftops, not in place of forests."]]
+  ],
+  [ // 10 All of Türkiye
+    ["On short trips I walk, cycle or take public transport.", ["I buy a new phone every year.", "Making every new device uses a lot of energy."], ["I use disposable plastic plates and cups.", "Plastic is made from oil and becomes rubbish."]],
+    ["We put solar panels on the roofs of the school and our homes.", ["We turn the neighbourhood park into a car park.", "More cars means fewer trees."], ["We collect garden leaves and rubbish and burn them.", "Burning releases carbon and smoke into the air; leaves can become compost."]],
+    ["Coal power plants close, and electricity comes from the sun and the wind.", ["New coal power plants are built to meet electricity needs.", "Coal is one of the biggest causes of warming."], ["Forests are cut down and replaced with factories.", "Forests hold carbon from the air; when they are cut, warming increases."]]
+  ]
+];
+const DURUM_EN = [
+  { ad: "Silent streams", yer: "Lake Van", tur: "Pearl mullet",
+    mektup: "In 2100 there are no pearl mullets in Lake Van. My grandmother says that every spring thousands of fish swam somewhere together. We have never seen it. What changed?",
+    bilgi: "The pearl mullet lives in salty, soda-rich Lake Van, but every spring it migrates to freshwater streams to lay its eggs. If the stream does not reach the lake, no new mullets are born.",
+    ipuclari: ["Lake Van is very rich in soda. Mullet eggs cannot develop in this water.", "To lay its eggs, the mullet migrates to fresh water, that is, to streams.", "Look at the stream and the lake on the table: can the mullet get from one to the other?"] },
+  { ad: "The bear at the dump", yer: "Black Sea", tur: "Brown bear",
+    mektup: "We saw the last brown bear at the village dump. Our forest is still there, but bears can no longer live in it. Why?",
+    bilgi: "A brown bear needs a very large, unbroken forest to survive. Around the world, where roads cut through forests, wildlife bridges are built: animals cross over the road to the other side of the forest.",
+    ipuclari: ["A brown bear roams a very large area to find food.", "A road through the middle of a forest is like a wall for a bear.", "How many separate forest patches are on the table? Can the bear get from one to another?"] },
+  { ad: "Hungry chicks", yer: "Birecik", tur: "Northern bald ibis",
+    mektup: "In Birecik the birds still nest on the cliffs, but their chicks go hungry. Their mothers have to fly very far to find food.",
+    bilgi: "The bald ibis looks for insects on the steppe and for small creatures at the edge of wetlands. It needs both near its nest. The last wild bald ibises in Türkiye live in Birecik.",
+    ipuclari: ["In Birecik lives a bird with a bald head and a long beak that nests on the cliffs.", "This bird eats insects on dry land and small creatures at the water’s edge.", "How far apart are the bird’s two feeding places on the table?"] },
+  { ad: "Nowhere to run", yer: "Konya, Bozdağ", tur: "Anatolian mouflon",
+    mektup: "No wild animals graze on the slopes of Bozdağ anymore. When the wolves came, the herds found nowhere to escape.",
+    bilgi: "The Anatolian mouflon lives only in Türkiye. It grazes on the steppe and takes shelter on rocky mountains when in danger. Once only 50 were left; thanks to protection, their numbers have grown.",
+    ipuclari: ["This animal lives only in Türkiye, near Konya, and feeds on grass.", "When in danger, it escapes by climbing steep rocks.", "Are the place where it grazes and the place where it hides next to each other on the table?"] },
+  { ad: "Burning summers", yer: "Antalya, Manavgat", tur: "Red pine forest",
+    mektup: "Our summers are very long now. Some forests burn every summer, while others stay green. What is the difference?",
+    bilgi: "As temperatures rise, forests dry out and fires grow bigger. In the summer of 2021 there were huge fires in Manavgat. Forests next to streams and lakes stay moister, which slows fires down.",
+    ipuclari: ["Dry trees and dry soil catch fire from a small spark.", "In some places the soil stays moist all summer.", "Is there anything near the forest on the table that gives it moisture?"],
+    soru: { metin: "Why did this forest not burn in 2100?", secenekler: ["The stream kept spraying water on the forest.", "The soil and trees along the stream stayed moist all summer.", "Trees grew very sparsely along the stream.", "The wind never blew along the stream."] } },
+  { ad: "Lost herds", yer: "Taurus Mountains", tur: "Wild goat",
+    mektup: "In the Taurus Mountains the herds kept getting smaller. Each herd stayed on its own small cliff, and they never found each other.",
+    bilgi: "The wild goat lives in large, steep mountains. If its habitat is broken into small pieces, the herds are cut off from each other and grow weaker.",
+    ipuclari: ["This animal lives on steep cliffs and has long, curved horns.", "In small, separate habitats, herds cannot find each other.", "Are the cliffs on the table connected to each other?"] },
+  { ad: "Dust desert", yer: "Konya, Lake Akşehir", tur: "Lake birds",
+    mektup: "Where Lake Akşehir used to be, there is now a salty dust desert. The fields around it are bright green, but the lake is bone dry. How can that be?",
+    bilgi: "The streams flowing into Lake Akşehir were turned to irrigate fields, and the lake mostly dried up. To keep a lake alive, part of the water must reach it.",
+    ipuclari: ["Lakes are fed mostly by the streams flowing into them, not by rain.", "If the fields are green, the water for them is coming from somewhere.", "Where does the stream end on the table?"],
+    soru: { metin: "Why did the lake fill up again in 2100?", secenekler: ["The fields were given more water.", "Rainfall increased a little every year.", "The stream’s water started reaching the lake again.", "Groundwater was pumped up from the lake bed."] } },
+  { ad: "Looking for cool places", yer: "From the Mediterranean to the Taurus", tur: "Forest creatures",
+    mektup: "Our forest has become very hot. Butterflies, insects and small mammals are looking for a cool place, but they cannot reach one.",
+    bilgi: "As warming increases, many species move to cooler places, higher up the mountains or further north. To move, they need a green corridor between the forest and the mountains.",
+    ipuclari: ["The higher you go, the cooler the air.", "In open land, forest creatures are easily hunted or dry out; they need to move through the trees.", "Is there a path from the forest to a cool place on the table?"],
+    soru: { metin: "How did this solution help the creatures?", secenekler: ["Snow on the mountain cooled the forest.", "The creatures could move through the trees to the cool mountains.", "The corridor lowered the temperature in the forest.", "Mountain animals came down to the forest and found food."] } },
+  { ad: "The stream that dries in summer", yer: "Kaz Mountains", tur: "Clean water",
+    mektup: "Our streams overflow in spring and are bone dry in summer. They used to flow all summer long. What changed at the source?",
+    bilgi: "A forest holds rainwater in its spongy soil and feeds the streams slowly all summer. When the forest at the source is cut, the stream floods quickly and dries quickly.",
+    ipuclari: ["Rain that falls on soil without trees runs off quickly.", "Some soils hold water like a sponge and release it slowly.", "What is around the source of the stream?"],
+    soru: { metin: "Why did the stream flow all summer in 2100?", secenekler: ["The trees pulled in clouds and made it rain.", "The trees covered the stream, so no water evaporated.", "Tree roots pumped water from underground into the stream.", "The forest soil held the rain and fed the stream slowly."] } },
+  { ad: "Deniz’s Türkiye", yer: "All of Türkiye", tur: "All species",
+    mektup: "My last wish: build a Türkiye where all species live together. And make the right decisions, starting today.",
+    bilgi: "An ecosystem is a whole. Every species depends on another habitat and on other living things. Fixing the table alone is not enough; warming must also be stopped. For that, Myself, My neighbourhood and My country must work together.",
+    kural: "You may change as many tiles as you like. First make the Myself, My neighbourhood and My country decisions below, then look with the telescope.",
+    ipuclari: ["Think about what you learned in the previous nine situations: what did each species need?", "Even if the table is right, species cannot survive if warming is too high.", "Make all three decisions right: Myself, My neighbourhood and My country."] }
+];
+const TUR_AD = { orman: ['Orman', 'Forest'], nehir: ['Dere ve ırmak', 'Stream and river'], sulak: ['Sulak alan', 'Wetland'], cayir: ['Bozkır', 'Steppe'], dag: ['Dağ', 'Mountain'], masa: ['Masa', 'Table'] };
+const SEVIYE_AD = [['Kendim', 'Myself'], ['Mahallem', 'My neighbourhood'], ['Ülkem', 'My country']];
+const CANLI_AD = [['İnci kefali', 'Pearl mullet'], ['Boz ayı', 'Brown bear'], ['Kelaynak', 'Northern bald ibis'], ['Yaban keçisi', 'Wild goat'], ['Anadolu yaban koyunu', 'Anatolian mouflon']];
+const HAVUZ_AD = [HAVUZ, 'You may use any type of tile. Make at most 2 changes: adding a tile or moving a tile counts as one change.'];
+const KARAR_TR = KARAR.slice();
+const DURUM_TR = DURUM.map(d => ({ ad: d.ad, yer: d.yer, tur: d.tur, mektup: d.mektup, bilgi: d.bilgi, ipuclari: d.ipuclari, kural: d.kural, soru: d.soru && d.soru.metin ? { metin: d.soru.metin, secenekler: d.soru.secenekler } : null }));
+// Seçili dile göre bütün yazıları yerinde değiştirir; kodun geri kalanı aynı dizileri okur
+function veriDil() {
+  const e = DIL === 'en' ? 1 : 0;
+  for (const k in TUR) TUR[k].ad = TUR_AD[k][e];
+  SEVIYE.forEach((s, i) => { s.lv = SEVIYE_AD[i][e]; });
+  CANLI.forEach((c, i) => { c[1] = CANLI_AD[i][e]; });
+  HAVUZ = HAVUZ_AD[e];
+  KARAR.splice(0, KARAR.length, ...(e ? KARAR_EN : KARAR_TR));
+  DURUM.forEach((d, i) => { const s = (e ? DURUM_EN : DURUM_TR)[i]; ['ad', 'yer', 'tur', 'mektup', 'bilgi', 'ipuclari', 'kural'].forEach(k => { d[k] = s[k]; }); if (s.soru) Object.assign(d.soru, s.soru); });
+}
 const kaydet = () => { try { localStorage.setItem('zd-cozulen', JSON.stringify([...S.cozulen])); localStorage.setItem('zd-yildiz', JSON.stringify([...S.yildiz])); localStorage.setItem('zd-tohum', JSON.stringify([...S.tohum])); } catch (e) {} };
 
 /* ---------- Renk: RGB → Lab ---------- */
@@ -10641,25 +10764,25 @@ function hesap() {
   const enBuyuk = t => yas(t).sort((a, b) => b.boy - a.boy)[0];
   const tur = [];
   const ayi = enBuyuk('orman');
-  tur.push({ em: '🐻', ad: 'Boz ayı', var: !!(ayi && ayi.boy * ayi.saglam >= toplam * 0.16), yer: ayi,
-    ok: 'Büyük ve kesintisiz bir orman buldu.', no: P.some(p => p.tur === 'orman') ? 'Orman parçaları ya çok küçük ya da kurudu. Ayı ancak büyük ve birbirine bağlı bir ormanda yaşar.' : 'Masada orman yok.',
-    ipucu: 'Orman döşemelerini birbirine değdirip tek parça yapın. Bir dere de yanından geçerse orman kurumaz.' });
+  tur.push({ em: '🐻', ad: L('Boz ayı', 'Brown bear'), var: !!(ayi && ayi.boy * ayi.saglam >= toplam * 0.16), yer: ayi,
+    ok: L('Büyük ve kesintisiz bir orman buldu.', 'It found a large, unbroken forest.'), no: P.some(p => p.tur === 'orman') ? L('Orman parçaları ya çok küçük ya da kurudu. Ayı ancak büyük ve birbirine bağlı bir ormanda yaşar.', 'The forest patches are too small or have dried out. A bear can only live in a large, connected forest.') : L('Masada orman yok.', 'There is no forest on the table.'),
+    ipucu: L('Orman döşemelerini birbirine değdirip tek parça yapın. Bir dere de yanından geçerse orman kurumaz.', 'Make the forest tiles touch so they form one piece. If a stream runs beside it, the forest will not dry out.') });
   const kefal = yas('nehir').find(p => [...p.komsu].some(k => P[k].tur === 'sulak' && P[k].yasar));
-  tur.push({ em: '🐟', ad: 'İnci kefali', var: !!kefal, yer: kefal,
-    ok: 'Dere göle (sulak alana) ulaşıyor. Kefal yumurtlamak için dereye çıkabiliyor.', no: 'Kefal gölde yaşar ama yumurtlamak için dereye çıkar. Göle bağlanan, kurumamış bir dere gerekiyor.',
-    ipucu: 'Bir dere döşemesini sulak alana değecek şekilde koyun.' });
+  tur.push({ em: '🐟', ad: L('İnci kefali', 'Pearl mullet'), var: !!kefal, yer: kefal,
+    ok: L('Dere göle (sulak alana) ulaşıyor. Kefal yumurtlamak için dereye çıkabiliyor.', 'The stream reaches the lake (wetland). The mullet can swim up the stream to lay its eggs.'), no: L('Kefal gölde yaşar ama yumurtlamak için dereye çıkar. Göle bağlanan, kurumamış bir dere gerekiyor.', 'The mullet lives in the lake but swims up a stream to lay its eggs. It needs a living stream that is connected to the lake.'),
+    ipucu: L('Bir dere döşemesini sulak alana değecek şekilde koyun.', 'Place a stream tile so that it touches the wetland.') });
   const kel = yas('cayir').find(p => [...p.komsu].some(k => P[k].tur === 'sulak' && P[k].yasar));
-  tur.push({ em: '🐦', ad: 'Kelaynak', var: !!kel, yer: kel,
-    ok: 'Bozkır sulak alanın hemen yanında. Kelaynak bozkırda böcek arıyor, suyun kıyısında besleniyor.', no: 'Kelaynağın hem bozkıra hem de yanında yaşayan bir sulak alana ihtiyacı var.',
-    ipucu: 'Bozkır ve sulak alan döşemelerini yan yana getirin.' });
+  tur.push({ em: '🐦', ad: L('Kelaynak', 'Northern bald ibis'), var: !!kel, yer: kel,
+    ok: L('Bozkır sulak alanın hemen yanında. Kelaynak bozkırda böcek arıyor, suyun kıyısında besleniyor.', 'The steppe is right next to the wetland. The ibis looks for insects on the steppe and feeds at the water’s edge.'), no: L('Kelaynağın hem bozkıra hem de yanında yaşayan bir sulak alana ihtiyacı var.', 'The ibis needs both a steppe and a living wetland next to it.'),
+    ipucu: L('Bozkır ve sulak alan döşemelerini yan yana getirin.', 'Put the steppe and wetland tiles side by side.') });
   const kec = yas('dag').filter(p => p.boy >= toplam * 0.08).sort((a, b) => b.boy - a.boy)[0];
-  tur.push({ em: '🐐', ad: 'Yaban keçisi', var: !!kec, yer: kec,
-    ok: 'Yeterince geniş, sarp bir dağlık alan var.', no: 'Yaban keçisi geniş ve sarp dağlarda yaşar. Dağ döşemeleri ya az ya da dağınık.',
-    ipucu: 'Dağ döşemelerini bir araya toplayın.' });
+  tur.push({ em: '🐐', ad: L('Yaban keçisi', 'Wild goat'), var: !!kec, yer: kec,
+    ok: L('Yeterince geniş, sarp bir dağlık alan var.', 'There is a large enough area of steep mountains.'), no: L('Yaban keçisi geniş ve sarp dağlarda yaşar. Dağ döşemeleri ya az ya da dağınık.', 'The wild goat lives in large, steep mountains. There are too few mountain tiles, or they are scattered.'),
+    ipucu: L('Dağ döşemelerini bir araya toplayın.', 'Bring the mountain tiles together.') });
   const koy = yas('cayir').find(p => [...p.komsu].some(k => P[k].tur === 'dag' && P[k].yasar));
-  tur.push({ em: '🐏', ad: 'Anadolu yaban koyunu', var: !!koy, yer: koy,
-    ok: 'Bozkır ile dağ yan yana. Koyun bozkırda otluyor, tehlikede dağa kaçıyor.', no: 'Yaban koyunu bozkırda otlar, tehlikede dağa sığınır. İkisi yan yana olmalı.',
-    ipucu: 'Bozkırı bir dağ döşemesine değdirin.' });
+  tur.push({ em: '🐏', ad: L('Anadolu yaban koyunu', 'Anatolian mouflon'), var: !!koy, yer: koy,
+    ok: L('Bozkır ile dağ yan yana. Koyun bozkırda otluyor, tehlikede dağa kaçıyor.', 'The steppe and the mountain are side by side. The mouflon grazes on the steppe and escapes to the mountain when in danger.'), no: L('Yaban koyunu bozkırda otlar, tehlikede dağa sığınır. İkisi yan yana olmalı.', 'The mouflon grazes on the steppe and hides in the mountains when in danger. The two must be side by side.'),
+    ipucu: L('Bozkırı bir dağ döşemesine değdirin.', 'Make the steppe touch a mountain tile.') });
   return { T, st, olu, tur };
 }
 
@@ -10925,48 +11048,48 @@ function bas(t) {
   cx.fillStyle = '#13201a'; cx.font = 'bold 16px sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText('↔', sx, G.H / 2 + 1);
   if (S.cal) {
     cx.fillStyle = 'rgba(0,0,0,.55)'; cx.fillRect(0, G.H - 34, G.W, 34);
-    cx.fillStyle = '#fff'; cx.font = 'bold 15px sans-serif'; cx.fillText(`${TUR[S.cal].ad} döşemesine dokunun`, G.W / 2, G.H - 17);
+    cx.fillStyle = '#fff'; cx.font = 'bold 15px sans-serif'; cx.fillText(L(`${TUR[S.cal].ad} döşemesine dokunun`, `Tap a ${TUR[S.cal].ad.toLowerCase()} tile`), G.W / 2, G.H - 17);
   }
 }
-const fmt = n => n.toFixed(2).replace('.', ',');
+const fmt = n => DIL === 'en' ? n.toFixed(2) : n.toFixed(2).replace('.', ',');
 function yenile() {
   const h = hesap(); gelecekCiz(h); bas(); if (typeof kararBlok === 'function') kararCiz();
   document.getElementById('yil').textContent = S.yil;
   document.getElementById('tagR').textContent = S.yil;
   const sic = document.getElementById('sic'); sic.textContent = fmt(h.T) + ' °C'; sic.className = 'temp ' + (h.T < 2 ? 'ok' : 'no');
   const goster = S.d === 9 || (S.sonuc && (S.sonuc.asama === 'odul' || S.sonuc.asama === 'karar'));
-  document.getElementById('species').innerHTML = !goster ? '<p class="muted" style="margin:0">Hangi canlının 2100\'de yaşadığını önce siz bulun. Doğru cevaptan sonra burada görünecek.</p>' : h.tur.map(t => `<div class="sp ${t.var ? '' : 'lost'}"><div class="em" aria-hidden="true">${t.em}</div><div><b class="${t.var ? 'ok' : 'no'}">${t.ad}: ${t.var ? 'yaşıyor' : 'yok'}</b></div></div>`).join('');
+  document.getElementById('species').innerHTML = !goster ? L('<p class="muted" style="margin:0">Hangi canlının 2100\'de yaşadığını önce siz bulun. Doğru cevaptan sonra burada görünecek.</p>', '<p class="muted" style="margin:0">First find out for yourselves which animal lives in 2100. It will appear here after the right answer.</p>') : h.tur.map(t => `<div class="sp ${t.var ? '' : 'lost'}"><div class="em" aria-hidden="true">${t.em}</div><div><b class="${t.var ? 'ok' : 'no'}">${t.ad}: ${t.var ? L('yaşıyor', 'alive') : L('yok', 'gone')}</b></div></div>`).join('');
   const eksik = h.tur.filter(t => !t.var);
   const P = G.parcalar;
   document.getElementById('habitat').innerHTML = HAB.map(t => { const ps = P.filter(p => p.tur === t), b = ps.reduce((a, p) => a + p.boy, 0), s = ps.reduce((a, p) => a + p.boy * p.saglam, 0);
     const [R, G2, B] = TUR[t].renk;
-    return `<div class="hb"><span><i class="sw" style="background:rgb(${R},${G2},${B})"></i><b>${TUR[t].ad}</b></span>${b ? `<div class="bar"><i style="width:${Math.round(s / b * 100)}%"></i></div><span class="muted">%${Math.round(s / b * 100)} sağlam · ${ps.length} parça</span>` : '<span class="muted">Masada görülmedi</span>'}</div>`; }).join('');
+    return `<div class="hb"><span><i class="sw" style="background:rgb(${R},${G2},${B})"></i><b>${TUR[t].ad}</b></span>${b ? `<div class="bar"><i style="width:${Math.round(s / b * 100)}%"></i></div><span class="muted">${L('%' + Math.round(s / b * 100) + ' sağlam', Math.round(s / b * 100) + '% healthy')} · ${ps.length} ${L('parça', ps.length === 1 ? 'patch' : 'patches')}</span>` : L('<span class="muted">Masada görülmedi</span>', '<span class="muted">Not seen on the table</span>')}</div>`; }).join('');
   const n = S.eylem.size;
-  document.getElementById('birlikte').textContent = n === 3 ? 'Kendim, Mahallem ve Ülkem birlikte: 2100 en serin hâlinde.' : n ? 'Her doğru karar 2100\'ü biraz daha serinletir.' : (S.d < 9 ? 'Kararlardan önce 2100\'de dünya 2 derece ısınmış. Doğru kararlar bunu düşürür.' : 'Hiçbir şey yapmazsak 2100\'de dünya 3 derece ısınmış olur.');
+  document.getElementById('birlikte').textContent = n === 3 ? L('Kendim, Mahallem ve Ülkem birlikte: 2100 en serin hâlinde.', 'Myself, My neighbourhood and My country together: 2100 is at its coolest.') : n ? L('Her doğru karar 2100\'ü biraz daha serinletir.', 'Each right decision cools 2100 a little more.') : (S.d < 9 ? L('Kararlardan önce 2100\'de dünya 2 derece ısınmış. Doğru kararlar bunu düşürür.', 'Before any decisions, the world in 2100 is 2 degrees warmer. Right decisions bring this down.') : L('Hiçbir şey yapmazsak 2100\'de dünya 3 derece ısınmış olur.', 'If we do nothing, the world will be 3 degrees warmer in 2100.'));
 }
 
 /* ---------- Kararlar ---------- */
 function kararCiz() {
   const el = document.getElementById('acts'), as = S.sonuc && S.sonuc.asama;
   // Karar sırası geldiyse seçenekler burada da dokunulabilir; gelmediyse ne yapılacağı yazılır
-  if (as === 'karar' || (S.d === 9 && as !== 'odul')) { el.innerHTML = `<p class="muted" style="margin:0">Her seviyede bu sorunu gerçekten çözecek olanı seçin.</p>` + kararBlok(); return; }
-  const kilit = as === 'odul' ? '' : `<p class="muted" style="margin:0">🔒 Kararlar, dürbünle doğru canlıyı doğru döşemede bulunca açılır. Önce durum kartındaki soruyu çözün.</p>`;
+  if (as === 'karar' || (S.d === 9 && as !== 'odul')) { el.innerHTML = `<p class="muted" style="margin:0">${L('Her seviyede bu sorunu gerçekten çözecek olanı seçin.', 'At each level, choose the option that really solves this problem.')}</p>` + kararBlok(); return; }
+  const kilit = as === 'odul' ? '' : `<p class="muted" style="margin:0">🔒 ${L('Kararlar, dürbünle doğru canlıyı doğru döşemede bulunca açılır. Önce durum kartındaki soruyu çözün.', 'Decisions unlock when the telescope finds the right animal on the right tile. First solve the question on the situation card.')}</p>`;
   el.innerHTML = kilit + SEVIYE.map((sv, i) => { const on = S.eylem.has(sv.id);
-    return `<div class="act" aria-pressed="${on}"><span class="lv">${sv.lv}</span><span>${on ? KARAR[S.d][i][0] : 'Henüz verilmedi'}</span><small>${on ? 'Doğru karar, 2100 serinledi' : ''}</small></div>`; }).join('');
+    return `<div class="act" aria-pressed="${on}"><span class="lv">${sv.lv}</span><span>${on ? KARAR[S.d][i][0] : L('Henüz verilmedi', 'Not decided yet')}</span><small>${on ? L('Doğru karar, 2100 serinledi', 'Right decision, 2100 cooled down') : ''}</small></div>`; }).join('');
 }
 kararCiz();
 // Ağaçta 25 yer var: 1. durum deneme turu, 2-9. durumlarda her karar 1 kozalak (24), 10. durumun üç kararı birlikte tepe kozalağı
 function kozalakNotu(d, s) {
-  if (d === 0) return 'Deneme turu: bu durumda kozalak yok, oyunu öğreniyorsunuz.';
-  if (d === 9) return S.tohum.has('tepe') ? '🌰 Üç karar da ilk denemede doğru: tepe kozalağını ağacın en üstüne takın!' : S.kararYanlis.size ? 'Tepe kozalağı için üç kararın da ilk denemede doğru olması gerekiyordu.' : 'Üç karar da ilk denemede doğru olursa tepe kozalağını kazanırsınız.';
-  return S.tohum.has(d + '-' + s) ? '🌰 Dala 1 kozalak takın.' : 'İlk denemede bulunamadığı için bu karara kozalak yok.';
+  if (d === 0) return L('Deneme turu: bu durumda kozalak yok, oyunu öğreniyorsunuz.', 'Practice round: no pine cones here, you are learning the game.');
+  if (d === 9) return S.tohum.has('tepe') ? L('🌰 Üç karar da ilk denemede doğru: tepe kozalağını ağacın en üstüne takın!', '🌰 All three decisions right on the first try: put the crown cone on the very top of the tree!') : S.kararYanlis.size ? L('Tepe kozalağı için üç kararın da ilk denemede doğru olması gerekiyordu.', 'For the crown cone, all three decisions had to be right on the first try.') : L('Üç karar da ilk denemede doğru olursa tepe kozalağını kazanırsınız.', 'If all three decisions are right on the first try, you win the crown cone.');
+  return S.tohum.has(d + '-' + s) ? L('🌰 Dala 1 kozalak takın.', '🌰 Put 1 pine cone on the branch.') : L('İlk denemede bulunamadığı için bu karara kozalak yok.', 'No pine cone for this decision, because it was not right on the first try.');
 }
 function kararBlok() {
   const d = S.d;
   return `<div class="karar">${SEVIYE.map((sv, s) => { const ok = S.eylem.has(sv.id), sec = S.karar[s];
     return `<div class="kr"><b>${sv.lv}</b>${ok ? `<span class="ok">✓ ${KARAR[d][s][0]}<br><b>${kozalakNotu(d, s)}</b></span>` : kararSira(d, s).map(i => { const o = KARAR[d][s][i];
       return `<button class="act" type="button" data-kr="${s}" data-ks="${i}" aria-pressed="false"><span>${i ? o[0] : o}</span>${sec === i ? `<small class="no">${o[1]}</small>` : ''}</button>`; }).join('')}</div>`; }).join('')}
-    <span class="muted">2100'de ısınma şu an <b>${fmt(sicaklik(2100))} °C</b>. Her doğru karar dürbündeki 2100'ü biraz serinletir; ${S.d === 0 ? 'bu deneme turunda kozalak yok.' : S.d === 9 ? 'üçü de ilk denemede doğruysa tepe kozalağı kazanılır.' : 'ilk denemede doğru olan karar dala bir kozalak kazandırır.'}</span></div>`;
+    <span class="muted">${L(`2100'de ısınma şu an <b>${fmt(sicaklik(2100))} °C</b>. Her doğru karar dürbündeki 2100'ü biraz serinletir; ${S.d === 0 ? 'bu deneme turunda kozalak yok.' : S.d === 9 ? 'üçü de ilk denemede doğruysa tepe kozalağı kazanılır.' : 'ilk denemede doğru olan karar dala bir kozalak kazandırır.'}`, `Warming in 2100 is now <b>${fmt(sicaklik(2100))} °C</b>. Each right decision cools the telescope’s 2100 a little; ${S.d === 0 ? 'there are no pine cones in this practice round.' : S.d === 9 ? 'if all three are right on the first try, you win the crown cone.' : 'a decision that is right on the first try earns a pine cone for the branch.'}`)}</span></div>`;
 }
 function kararVer(s, i) {
   const sv = SEVIYE[s];
@@ -10981,50 +11104,50 @@ document.getElementById('yilR').addEventListener('input', e => { S.yil = +e.targ
 function planSVG(h) {
   const r = 20, hw = Math.sqrt(3) * r, xy = ([q, s]) => [r + 4 + q * hw + (s % 2) * hw / 2, r + 4 + s * r * 1.5];
   const W = 4 + r * 2 + 8 * hw, H = 8 + r * 2 + 4 * r * 1.5;
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Başlangıç dizilimi">${h.map(t => { const [cx, cy] = xy(t), [R, G2, B] = TUR[t[2]].renk;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${L('Başlangıç dizilimi', 'Starting layout')}">${h.map(t => { const [cx, cy] = xy(t), [R, G2, B] = TUR[t[2]].renk;
     const pts = [...Array(6)].map((_, k) => { const a = Math.PI / 6 + k * Math.PI / 3; return `${(cx + Math.cos(a) * (r - 1)).toFixed(1)},${(cy + Math.sin(a) * (r - 1)).toFixed(1)}`; }).join(' ');
     return `<polygon points="${pts}" fill="rgb(${R},${G2},${B})" stroke="rgba(0,0,0,.25)"/>`; }).join('')}</svg>`;
 }
 function stripCiz() {
-  document.getElementById('strip').innerHTML = DURUM.map((d, i) => `<button class="dno ${S.cozulen.has(i) ? 'ok' : ''}" role="tab" type="button" data-i="${i}" aria-selected="${S.d === i}" title="${S.cozulen.has(i) ? d.ad : 'Durum ' + (i + 1)}">${i + 1}${S.cozulen.has(i) ? ' ' + d.em : ''}</button>`).join('') + (S.cozulen.size ? '<button class="dno" type="button" data-sifir="1">Baştan başla</button>' : '');
+  document.getElementById('strip').innerHTML = DURUM.map((d, i) => `<button class="dno ${S.cozulen.has(i) ? 'ok' : ''}" role="tab" type="button" data-i="${i}" aria-selected="${S.d === i}" title="${S.cozulen.has(i) ? d.ad : L('Durum ', 'Situation ') + (i + 1)}">${i + 1}${S.cozulen.has(i) ? ' ' + d.em : ''}</button>`).join('') + (S.cozulen.size ? L('<button class="dno" type="button" data-sifir="1">Baştan başla</button>', '<button class="dno" type="button" data-sifir="1">Start over</button>') : '');
 }
 function durumCiz() {
   const d = DURUM[S.d], k = S.sonuc, son = S.d === 9;
   const kullanilan = [...new Set(d.bas.map(t => t[2]))];
   const yildiz = S.yildiz.has(S.d);
   let alt = '';
-  if (k && k.asama === 'yaramadi') alt = `<div class="sonuc no" role="status"><b>2100'de henüz işe yaramadı.</b><span>${k.neden}</span><span class="muted">Masada değiştirin ve yeniden fotoğraf çekin. Takılırsanız ipucu alın.</span></div>`;
+  if (k && k.asama === 'yaramadi') alt = `<div class="sonuc no" role="status"><b>${L("2100'de henüz işe yaramadı.", 'It has not worked in 2100 yet.')}</b><span>${k.neden}</span><span class="muted">${L('Masada değiştirin ve yeniden fotoğraf çekin. Takılırsanız ipucu alın.', 'Change something on the table and take a new photo. If you get stuck, take a hint.')}</span></div>`;
   if (k && k.asama === 'soru') {
     const q = d.soru;
-    alt = `<div class="sonuc ok" role="status"><b>Masadaki değişiklik 2100'de işe yaradı.</b>`;
-    if (q.tip === 'canli') alt += `<span>Şimdi hangi canlının geri döndüğünü bulun. Pulunu QR yüzü üstte, doğru döşemenin sivri alt ucuna (pul yeri), QR'ı kapatmadan koyup dürbünle yeniden bakın ya da aşağıdan seçin.</span>
-      <div class="secim" role="group" aria-label="Canlı">${CANLI.map(([em, ad]) => `<button class="chip" type="button" data-canli="${em}" aria-pressed="${S.cevap.canli === em}">${em} ${ad}</button>`).join('')}</div>
-      <div class="secim" role="group" aria-label="Döşeme">${HAB.map(t => { const [R, G2, B] = TUR[t].renk; return `<button class="chip" type="button" data-yer="${t}" aria-pressed="${S.cevap.yer === t}"><i class="sw" style="background:rgb(${R},${G2},${B})"></i>${TUR[t].ad}</button>`; }).join('')}</div>`;
+    alt = `<div class="sonuc ok" role="status"><b>${L("Masadaki değişiklik 2100'de işe yaradı.", 'Your change on the table worked in 2100.')}</b>`;
+    if (q.tip === 'canli') alt += `<span>${L("Şimdi hangi canlının geri döndüğünü bulun. Pulunu QR yüzü üstte, doğru döşemenin sivri alt ucuna (pul yeri), QR'ı kapatmadan koyup dürbünle yeniden bakın ya da aşağıdan seçin.", 'Now find out which animal came back. Put its token QR side up on the pointed bottom end of the right tile (token spot), without covering the tile’s QR, and look again with the telescope, or choose below.')}</span>
+      <div class="secim" role="group" aria-label="${L('Canlı', 'Animal')}">${CANLI.map(([em, ad]) => `<button class="chip" type="button" data-canli="${em}" aria-pressed="${S.cevap.canli === em}">${em} ${ad}</button>`).join('')}</div>
+      <div class="secim" role="group" aria-label="${L('Döşeme', 'Tile')}">${HAB.map(t => { const [R, G2, B] = TUR[t].renk; return `<button class="chip" type="button" data-yer="${t}" aria-pressed="${S.cevap.yer === t}"><i class="sw" style="background:rgb(${R},${G2},${B})"></i>${TUR[t].ad}</button>`; }).join('')}</div>`;
     else alt += `<span><b>${q.metin}</b></span><div class="secenek">${q.secenekler.map((x, i) => `<button class="chip" type="button" data-sec="${i}" aria-pressed="${S.cevap.sec === i}">${'ABCD'[i]}) ${x}</button>`).join('')}</div>`;
     const hazir = q.tip === 'canli' ? S.cevap.canli && S.cevap.yer : S.cevap.sec != null;
-    alt += `${k.yanlis ? `<span class="no">${k.yanlis}</span>` : ''}<button class="btn primary" type="button" data-git="cevap" ${hazir ? '' : 'disabled'}>Cevabımız bu</button></div>`;
+    alt += `${k.yanlis ? `<span class="no">${k.yanlis}</span>` : ''}<button class="btn primary" type="button" data-git="cevap" ${hazir ? '' : 'disabled'}>${L('Cevabımız bu', 'This is our answer')}</button></div>`;
   }
-  if (k && k.asama === 'karar') alt = `<div class="sonuc ok" role="status"><b>Doğru! ${d.tur} 2100'de yaşıyor. Şimdi gelecek için karar verin.</b><span>Her seviyede bu sorunu gerçekten çözecek olanı seçin.</span>${kararBlok()}</div>`;
-  if (son && !(k && k.asama === 'odul')) alt = `<div class="sonuc" role="group"><b>Önce kararlarınızı verin</b>${kararBlok()}</div>` + alt;
+  if (k && k.asama === 'karar') alt = `<div class="sonuc ok" role="status"><b>${L(`Doğru! ${d.tur} 2100'de yaşıyor. Şimdi gelecek için karar verin.`, `Correct! ${d.tur}: alive in 2100. Now make decisions for the future.`)}</b><span>${L('Her seviyede bu sorunu gerçekten çözecek olanı seçin.', 'At each level, choose the option that really solves this problem.')}</span>${kararBlok()}</div>`;
+  if (son && !(k && k.asama === 'odul')) alt = `<div class="sonuc" role="group"><b>${L('Önce kararlarınızı verin', 'First make your decisions')}</b>${kararBlok()}</div>` + alt;
   if (k && k.asama === 'odul') alt = `<div class="sonuc ok" role="status">
-      <div class="odul"><span class="em" aria-hidden="true">${d.em}</span><b>Doğru! ${son ? 'Deniz\'in Türkiye\'si kuruldu.' : d.tur + ' 2100\'de yaşıyor.'}${yildiz ? ' ⭐ İpucusuz çözdünüz.' : ''}</b><span>${d.bilgi}</span></div>
-      <div><b>Ödülünüz</b><br>Masada: ${son ? `Bütün pullar masada; bu masa Deniz'in yeni Türkiye'si. <b>Final:</b> Masadaki dalda ${S.tohum.size} kozalak var. Her biri bugün verdiğiniz doğru bir karar. Kuru bir dal olarak başladı; şimdi sizin kararlarınızla büyüyen Gelecek Ağacı. 2100'ün Türkiye'si bu ağacın gölgesinde.${S.tohum.size < 25 ? ' Boş kalan yerler, ilk denemede doğru verilemeyen kararlar.' : ' Ağacın 25 yerinin hepsi dolu!'}` : `${d.pul ? `${d.em} pulunu çevirip resmi üstte olacak şekilde ${TUR[S.cevap.yer].ad.toLowerCase()} döşemesinde bırakın. ` : ''}Dalda şimdi ${S.tohum.size} kozalak var.`}<br>Ekranda: ${d.em} 2100 albümüne eklendi. Kararlarınızla 2100'de ısınma ${son ? '3,00' : '2,00'} dereceden ${fmt(sicaklik(2100))} dereceye indi.</div>
-      ${son ? '' : '<button class="btn primary" type="button" data-git="sonraki">Sonraki duruma geç</button>'}
+      <div class="odul"><span class="em" aria-hidden="true">${d.em}</span><b>${L('Doğru! ', 'Correct! ')}${son ? L('Deniz\'in Türkiye\'si kuruldu.', 'Deniz’s Türkiye has been built.') : L(d.tur + ' 2100\'de yaşıyor.', d.tur + ': alive in 2100.')}${yildiz ? L(' ⭐ İpucusuz çözdünüz.', ' ⭐ Solved without hints.') : ''}</b><span>${d.bilgi}</span></div>
+      <div>${L(`<b>Ödülünüz</b><br>Masada: ${son ? `Bütün pullar masada; bu masa Deniz'in yeni Türkiye'si. <b>Final:</b> Masadaki dalda ${S.tohum.size} kozalak var. Her biri bugün verdiğiniz doğru bir karar. Kuru bir dal olarak başladı; şimdi sizin kararlarınızla büyüyen Gelecek Ağacı. 2100'ün Türkiye'si bu ağacın gölgesinde.${S.tohum.size < 25 ? ' Boş kalan yerler, ilk denemede doğru verilemeyen kararlar.' : ' Ağacın 25 yerinin hepsi dolu!'}` : `${d.pul ? `${d.em} pulunu çevirip resmi üstte olacak şekilde ${TUR[S.cevap.yer].ad.toLowerCase()} döşemesinde bırakın. ` : ''}Dalda şimdi ${S.tohum.size} kozalak var.`}<br>Ekranda: ${d.em} 2100 albümüne eklendi. Kararlarınızla 2100'de ısınma ${son ? '3,00' : '2,00'} dereceden ${fmt(sicaklik(2100))} dereceye indi.`, `<b>Your reward</b><br>On the table: ${son ? `All the tokens are on the table; this table is Deniz’s new Türkiye. <b>Final:</b> There are ${S.tohum.size} pine cones on the branch. Each one is a right decision you made today. It started as a dry branch; now it is a Future Tree growing with your decisions. The Türkiye of 2100 lives in the shade of this tree.${S.tohum.size < 25 ? ' The empty spots are decisions that were not right on the first try.' : ' All 25 spots on the tree are full!'}` : `${d.pul ? `Flip the ${d.em} token picture side up and leave it on the ${TUR[S.cevap.yer].ad.toLowerCase()} tile. ` : ''}There are now ${S.tohum.size} pine cones on the branch.`}<br>On the screen: ${d.em} was added to the 2100 album. Thanks to your decisions, warming in 2100 dropped from ${son ? '3.00' : '2.00'} to ${fmt(sicaklik(2100))} degrees.`)}</div>
+      ${son ? '' : `<button class="btn primary" type="button" data-git="sonraki">${L('Sonraki duruma geç', 'Go to the next situation')}</button>`}
     </div>`;
   document.getElementById('durumKart').innerHTML = `
     <div style="display:grid;gap:10px;min-width:0">
-      <span class="yer">Durum ${S.d + 1} / 10 · ${d.yer}</span>
+      <span class="yer">${L('Durum', 'Situation')} ${S.d + 1} / 10 · ${d.yer}</span>
       <h2>${S.cozulen.has(S.d) ? d.em : '❓'} ${d.ad}</h2>
       <p class="mektup">“${d.mektup}” <span class="muted">Deniz, 2100</span></p>
-      <div class="kural"><b>Kural</b><span>${d.kural || HAVUZ}</span></div>
-      <div class="ipuclari">${d.ipuclari.slice(0, S.ipucu).map((x, i) => `<p><b>İpucu ${i + 1}:</b> ${x}</p>`).join('')}
-        ${S.ipucu < 3 && !(k && k.asama === 'odul') ? `<button class="btn" type="button" data-git="ipucu">İpucu al (${S.ipucu + 1}/3)</button>` : ''}</div>
+      <div class="kural"><b>${L('Kural', 'Rule')}</b><span>${d.kural || HAVUZ}</span></div>
+      <div class="ipuclari">${d.ipuclari.slice(0, S.ipucu).map((x, i) => `<p><b>${L('İpucu', 'Hint')} ${i + 1}:</b> ${x}</p>`).join('')}
+        ${S.ipucu < 3 && !(k && k.asama === 'odul') ? `<button class="btn" type="button" data-git="ipucu">${L('İpucu al', 'Get a hint')} (${S.ipucu + 1}/3)</button>` : ''}</div>
       ${alt}
     </div>
     <div style="display:grid;gap:10px;min-width:0">
-      <div class="plan"><span class="muted">Başlangıç: masaya böyle dizin.</span>${planSVG(d.bas)}<span class="muted">${kullanilan.map(t => TUR[t].ad).join(', ')}</span></div>
-      <div class="kural"><b>2100 albümü</b><div class="album">${DURUM.map((x, i) => `<span class="${S.cozulen.has(i) ? 'on' : ''}" title="${S.cozulen.has(i) ? x.tur : 'Durum ' + (i + 1)}${S.yildiz.has(i) ? ' ⭐' : ''}">${S.cozulen.has(i) ? x.em : '?'}</span>`).join('')}</div>
-        <span class="muted">${S.cozulen.size} / 10 durum · ${S.yildiz.size} ⭐ ipucusuz · 🌰 ${S.tohum.size} / 25 kozalak</span></div>
+      <div class="plan"><span class="muted">${L('Başlangıç: masaya böyle dizin.', 'Start: lay out the table like this.')}</span>${planSVG(d.bas)}<span class="muted">${kullanilan.map(t => TUR[t].ad).join(', ')}</span></div>
+      <div class="kural"><b>${L('2100 albümü', '2100 album')}</b><div class="album">${DURUM.map((x, i) => `<span class="${S.cozulen.has(i) ? 'on' : ''}" title="${S.cozulen.has(i) ? x.tur : L('Durum ', 'Situation ') + (i + 1)}${S.yildiz.has(i) ? ' ⭐' : ''}">${S.cozulen.has(i) ? x.em : '?'}</span>`).join('')}</div>
+        <span class="muted">${S.cozulen.size} / 10 ${L('durum', 'situations')} · ${S.yildiz.size} ⭐ ${L('ipucusuz', 'without hints')} · 🌰 ${S.tohum.size} / 25 ${L('kozalak', 'pine cones')}</span></div>
     </div>`;
 }
 function odulVer() {
@@ -11038,16 +11161,16 @@ function kontrolEt() {
   const ok = !!d.kontrol(h);
   if (ok && S.sonuc && (S.sonuc.asama === 'odul' || S.sonuc.asama === 'karar')) return;
   if (ok && d.soru && S.sonuc && S.sonuc.asama === 'soru') { hayvanBak(d); return; }
-  let neden = `${d.em} ${d.tur} 2100'de hâlâ yok.`;
-  if (!ok && S.d === 9) { const e = h.tur.filter(t => !t.var); neden = `${e.map(t => t.em + ' ' + t.ad).join(', ')} 2100'de yaşamıyor.${h.T >= 2 ? ' Isınma da çok yüksek.' : ''}`; }
-  if (!G.parcalar.length) neden = 'Dürbün hiç döşeme göremedi. Fotoğrafı yukarıdan, iyi ışıkta çekin ya da aşağıdan döşeme renklerini tanıtın.';
+  let neden = L(`${d.em} ${d.tur} 2100'de hâlâ yok.`, `${d.em} ${d.tur}: still missing in 2100.`);
+  if (!ok && S.d === 9) { const e = h.tur.filter(t => !t.var); neden = L(`${e.map(t => t.em + ' ' + t.ad).join(', ')} 2100'de yaşamıyor.${h.T >= 2 ? ' Isınma da çok yüksek.' : ''}`, `${e.map(t => t.em + ' ' + t.ad).join(', ')}: not living in 2100.${h.T >= 2 ? ' Warming is also too high.' : ''}`); }
+  if (!G.parcalar.length) neden = L('Dürbün hiç döşeme göremedi. Fotoğrafı yukarıdan, iyi ışıkta çekin ya da aşağıdan döşeme renklerini tanıtın.', 'The telescope could not see any tiles. Take the photo from above in good light, or teach it the tile colours below.');
   if (!ok) { S.sonuc = { asama: 'yaramadi', neden }; return; }
   if (d.soru) { S.cevap = {}; S.sonuc = { asama: 'soru' }; hayvanBak(d); } else { odulVer(); yenile(); }
 }
 function hayvanBak(d) {
   const hs = S.qrHayvan || [];
   if (d.soru.tip !== 'canli' || !hs.length) return;
-  if (hs.length > 1) { S.sonuc.yanlis = 'Masada birden fazla hayvan pulu var. Yalnızca geri döneceğini düşündüğünüz canlının pulunu bırakıp yeniden bakın.'; return; }
+  if (hs.length > 1) { S.sonuc.yanlis = L('Masada birden fazla hayvan pulu var. Yalnızca geri döneceğini düşündüğünüz canlının pulunu bırakıp yeniden bakın.', 'There is more than one animal token on the table. Leave only the token of the animal you think will come back, and look again.'); return; }
   S.cevap = { canli: hs[0].em, yer: hs[0].tur }; cevapla();
 }
 function cevapla() {
@@ -11055,12 +11178,13 @@ function cevapla() {
   const dogru = q.tip === 'canli' ? S.cevap.canli === q.dogru && q.yer.includes(S.cevap.yer) : S.cevap.sec === q.dogru;
   if (dogru) { if (S.d < 9) { S.sonuc = { asama: 'karar' }; S.karar = {}; } else odulVer(); yenile(); return; }
   S.yanlisVar = true;
-  let m = 'Tam değil. Yeniden düşünün.';
-  if (q.tip === 'canli') m = S.cevap.canli !== q.dogru ? 'Bu canlı burada yaşamaz. Deniz\'in mektubunu yeniden okuyun.' : 'Canlı doğru ama bu döşeme onun yaşam alanı değil.';
+  let m = L('Tam değil. Yeniden düşünün.', 'Not quite. Think again.');
+  if (q.tip === 'canli') m = S.cevap.canli !== q.dogru ? L('Bu canlı burada yaşamaz. Deniz\'in mektubunu yeniden okuyun.', 'This animal does not live here. Read Deniz’s letter again.') : L('Canlı doğru ama bu döşeme onun yaşam alanı değil.', 'Right animal, but this tile is not its habitat.');
   S.sonuc = { asama: 'soru', yanlis: m };
 }
 function durumSec(i) { S.d = i; S.sonuc = null; S.eylem.clear(); S.karar = {}; S.kararYanlis = new Set(); kararCiz(); S.foto = false; S.ipucu = 0; S.cevap = {}; S.yanlisVar = false; izgaraYukle(DURUM[i].bas); if (document.getElementById('izgara')) izgaraCiz(); S.img = ornekCiz(DURUM[i].bas); cozumle(S.img); yenile(); stripCiz(); durumCiz();
-  document.getElementById('durum').textContent = 'Ekranda başlangıç dizilimi var. Masayı kurup değiştirin, sonra fotoğrafını çekin.'; }
+  document.getElementById('durum').textContent = ilkMesaj(); }
+const ilkMesaj = () => L('Ekranda başlangıç dizilimi var. Masayı kurup değiştirin, sonra fotoğrafını çekin.', 'The screen shows the starting layout. Set up the table, make your change, then take a photo.');
 document.getElementById('strip').addEventListener('click', e => { const b = e.target.closest('.dno'); if (!b) return; if (b.dataset.sifir) { S.cozulen.clear(); S.yildiz.clear(); S.tohum.clear(); S.eylem.clear(); kaydet(); kararCiz(); durumSec(0); return; } durumSec(+b.dataset.i); });
 document.getElementById('acts').addEventListener('click', e => { const kb = e.target.closest('[data-kr]'); if (kb) kararVer(+kb.dataset.kr, +kb.dataset.ks); });
 document.getElementById('durumKart').addEventListener('click', e => {
@@ -11085,7 +11209,7 @@ function degisimSay() {
   return Math.max(ek, cik);
 }
 function paletCiz() {
-  document.getElementById('palet').innerHTML = HAB.map(t => { const [R, G2, B] = TUR[t].renk; return `<button class="chip" type="button" data-p="${t}" aria-pressed="${S.palet === t}"><i class="sw" style="background:rgb(${R},${G2},${B})"></i>${TUR[t].ad}</button>`; }).join('') + `<button class="chip" type="button" data-p="sil" aria-pressed="${S.palet === 'sil'}">Kaldır</button>`;
+  document.getElementById('palet').innerHTML = HAB.map(t => { const [R, G2, B] = TUR[t].renk; return `<button class="chip" type="button" data-p="${t}" aria-pressed="${S.palet === t}"><i class="sw" style="background:rgb(${R},${G2},${B})"></i>${TUR[t].ad}</button>`; }).join('') + `<button class="chip" type="button" data-p="sil" aria-pressed="${S.palet === 'sil'}">${L('Kaldır', 'Remove')}</button>`;
 }
 function izgaraCiz() {
   const r = 30, hw = Math.sqrt(3) * r, W = hw * IZ.cols + hw / 2 + 8, H = r * 2 + (IZ.rows - 1) * r * 1.5 + 8;
@@ -11094,11 +11218,11 @@ function izgaraCiz() {
   for (let s = 0; s < IZ.rows; s++) for (let q = 0; q < IZ.cols; q++) {
     const cx = 4 + hw / 2 + q * hw + (s % 2) * hw / 2, cy = 4 + r + s * r * 1.5, t = S.izgara.get(anahtar(q, s));
     const pts = [...Array(6)].map((_, k) => { const a = Math.PI / 6 + k * Math.PI / 3; return `${(cx + Math.cos(a) * (r - 1.5)).toFixed(1)},${(cy + Math.sin(a) * (r - 1.5)).toFixed(1)}`; }).join(' ');
-    out += t ? `<polygon points="${pts}" data-q="${q}" data-s="${s}" fill="rgb(${TUR[t].renk.join(',')})" stroke="rgba(0,0,0,.3)"><title>${TUR[t].ad}</title></polygon>` : `<polygon class="bos" points="${pts}" data-q="${q}" data-s="${s}"><title>Boş</title></polygon>`;
+    out += t ? `<polygon points="${pts}" data-q="${q}" data-s="${s}" fill="rgb(${TUR[t].renk.join(',')})" stroke="rgba(0,0,0,.3)"><title>${TUR[t].ad}</title></polygon>` : `<polygon class="bos" points="${pts}" data-q="${q}" data-s="${s}"><title>${L('Boş', 'Empty')}</title></polygon>`;
   }
   svg.innerHTML = out;
   const n = degisimSay();
-  document.getElementById('degisim').textContent = S.d < 9 ? `Değişiklik: ${n} / 2` : `Değişiklik: ${n}`;
+  document.getElementById('degisim').textContent = S.d < 9 ? `${L('Değişiklik', 'Changes')}: ${n} / 2` : `${L('Değişiklik', 'Changes')}: ${n}`;
   document.getElementById('degisim').className = n > 2 && S.d < 9 ? 'no' : 'muted';
 }
 document.getElementById('palet').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (!b) return; S.palet = b.dataset.p; paletCiz(); });
@@ -11110,11 +11234,11 @@ document.getElementById('izgara').addEventListener('click', e => {
 });
 document.getElementById('bak').addEventListener('click', () => {
   const n = degisimSay(), uyari = document.getElementById('kuralUyari');
-  if (S.d < 9 && n > 2) { uyari.textContent = `Kurala göre en fazla 2 değişiklik yapabilirsiniz. Şu an ${n} değişiklik var.`; return; }
+  if (S.d < 9 && n > 2) { uyari.textContent = L(`Kurala göre en fazla 2 değişiklik yapabilirsiniz. Şu an ${n} değişiklik var.`, `The rule allows at most 2 changes. There are ${n} changes now.`); return; }
   uyari.textContent = '';
   S.img = ornekCiz([...S.izgara].map(([k, t]) => [...k.split(',').map(Number), t]), true); S.foto = true;
   cozumle(S.img); yenile(); kontrolEt(); durumCiz(); yenile();
-  document.getElementById('durum').textContent = 'Dürbün ekrandaki masaya baktı. Perdeyi sürükleyin.';
+  document.getElementById('durum').textContent = L('Dürbün ekrandaki masaya baktı. Perdeyi sürükleyin.', 'The telescope looked at the table on the screen. Drag the curtain.');
   document.getElementById('durumKart').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 document.getElementById('geri').addEventListener('click', () => { izgaraYukle(DURUM[S.d].bas); izgaraCiz(); document.getElementById('kuralUyari').textContent = ''; });
@@ -11135,21 +11259,22 @@ view.addEventListener('keydown', () => {});
 
 /* ---------- Renk tanıtma ---------- */
 const chips = document.getElementById('chips');
-chips.innerHTML = Object.keys(TUR).map(k => { const [R, G2, B] = TUR[k].renk; return `<button class="chip" type="button" data-k="${k}" aria-pressed="false"><i class="sw" style="background:rgb(${R},${G2},${B})"></i>${TUR[k].ad}</button>`; }).join('') + '<button class="chip" type="button" data-k="sifirla">Varsayılana dön</button>';
+function chipsCiz() { chips.innerHTML = Object.keys(TUR).map(k => { const [R, G2, B] = TUR[k].renk; return `<button class="chip" type="button" data-k="${k}" aria-pressed="false"><i class="sw" style="background:rgb(${R},${G2},${B})"></i>${TUR[k].ad}</button>`; }).join('') + `<button class="chip" type="button" data-k="sifirla">${L('Varsayılana dön', 'Reset to default')}</button>`; }
+chipsCiz();
 const VARSAYILAN = JSON.parse(JSON.stringify(TUR));
 chips.addEventListener('click', e => {
   const b = e.target.closest('.chip'); if (!b) return;
   if (b.dataset.k === 'sifirla') { for (const k in TUR) TUR[k].renk = VARSAYILAN[k].renk.slice(); labYenile(); chipYenile(); S.cal = null; view.classList.remove('cal'); if (S.img) { cozumle(S.img); yenile(); } return; }
   S.cal = S.cal === b.dataset.k ? null : b.dataset.k;
   view.classList.toggle('cal', !!S.cal); chipYenile(); bas();
-  document.getElementById('calDurum').textContent = S.cal ? `Şimdi fotoğrafta bir ${TUR[S.cal].ad.toLowerCase()} döşemesine dokunun.` : '';
+  document.getElementById('calDurum').textContent = S.cal ? L(`Şimdi fotoğrafta bir ${TUR[S.cal].ad.toLowerCase()} döşemesine dokunun.`, `Now tap a ${TUR[S.cal].ad.toLowerCase()} tile in the photo.`) : '';
 });
 function chipYenile() { chips.querySelectorAll('.chip[data-k]').forEach(c => { const k = c.dataset.k; if (!TUR[k]) return; c.setAttribute('aria-pressed', S.cal === k); const [R, G2, B] = TUR[k].renk; c.querySelector('.sw').style.background = `rgb(${R},${G2},${B})`; }); }
 function renkAl(fx, fy) {
   const X = Math.round(fx * G.W), Y = Math.round(fy * G.H), x = G.src.getContext('2d'), w = 9, d = x.getImageData(Math.max(0, X - w), Math.max(0, Y - w), w * 2, w * 2).data;
   let r = 0, g = 0, b = 0, n = 0; for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i + 1]; b += d[i + 2]; n++; }
   const k = S.cal; TUR[k].renk = [r / n, g / n, b / n].map(Math.round); labYenile();
-  document.getElementById('calDurum').textContent = `${TUR[k].ad} rengi kaydedildi. Başka bir tür seçin ya da bitirmek için seçili türe yeniden basın.`;
+  document.getElementById('calDurum').textContent = L(`${TUR[k].ad} rengi kaydedildi. Başka bir tür seçin ya da bitirmek için seçili türe yeniden basın.`, `${TUR[k].ad} colour saved. Choose another type, or tap the selected type again to finish.`);
   S.cal = null; view.classList.remove('cal'); chipYenile();
   cozumle(S.img || G.src); yenile(); if (S.foto) { kontrolEt(); durumCiz(); }
 }
@@ -11158,7 +11283,7 @@ function renkAl(fx, fy) {
 function fotoAc(f) {
   if (!f || !/^image\//.test(f.type || 'image/')) return;
   const img = new Image(); img.onload = async () => { const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; c.getContext('2d').drawImage(img, 0, 0); URL.revokeObjectURL(img.src); await kareyeBak(c); };
-  img.onerror = () => { document.getElementById('durum').textContent = 'Fotoğraf açılamadı. Başka bir fotoğraf deneyin.'; };
+  img.onerror = () => { document.getElementById('durum').textContent = L('Fotoğraf açılamadı. Başka bir fotoğraf deneyin.', 'The photo could not be opened. Try another photo.'); };
   img.src = URL.createObjectURL(f);
 }
 ['foto', 'galeri'].forEach(id => document.getElementById(id).addEventListener('change', e => { fotoAc(e.target.files && e.target.files[0]); e.target.value = ''; }));
@@ -11295,14 +11420,14 @@ async function qrIleBak(kare) {
 function perdeKaydir() { const t0 = performance.now(), p0 = S.perde, p1 = 0.12;
   const adim = t => { const k = Math.min(1, (t - t0) / 1200); S.perde = p0 + (p1 - p0) * k * k * (3 - 2 * k); bas(); if (k < 1) requestAnimationFrame(adim); }; requestAnimationFrame(adim); }
 async function kareyeBak(c) {
-  document.getElementById('durum').textContent = 'Dürbün bakıyor…';
+  document.getElementById('durum').textContent = L('Dürbün bakıyor…', 'The telescope is looking…');
   S.qrHayvan = []; S.qrSay = null;
   const qr = await qrIleBak(c);
   if (!qr) {
     const hay = S.qrHayvanSay || 0;
     document.getElementById('durum').textContent = hay
-      ? 'Hayvan pulu görüldü ama döşeme QR\'ı görülmedi. Pul döşemenin QR\'ını kapatmasın: pulu döşemenin alt yarısına koyun.'
-      : 'Döşeme QR\'ı göremedim. Başlangıç planındaki bütün döşemeleri dizin, telefonu 30-40 cm yukarıdan, gölge düşürmeden tutun.';
+      ? L('Hayvan pulu görüldü ama döşeme QR\'ı görülmedi. Pul döşemenin QR\'ını kapatmasın: pulu döşemenin alt yarısına koyun.', 'An animal token was seen, but no tile QR. The token must not cover the tile’s QR: put it on the lower half of the tile.')
+      : L('Döşeme QR\'ı göremedim. Başlangıç planındaki bütün döşemeleri dizin, telefonu 30-40 cm yukarıdan, gölge düşürmeden tutun.', 'I could not see any tile QR. Lay out all the tiles from the starting plan and hold the phone 30-40 cm above the table without casting a shadow.');
     S.qrHayvan = []; return;
   }
   S.ornek = false; perdeKaydir();
@@ -11310,12 +11435,12 @@ async function kareyeBak(c) {
   if (belirsiz.length) {
     yenile(); durumCiz();
     document.getElementById('durum').textContent = belirsiz.map(a => a.sorun === 'sinir'
-      ? `${a.em} pulu iki döşemenin sınırında, hangisinde olduğundan emin değilim.`
-      : `${a.em} pulunun altındaki döşemenin QR'ını okuyamadım.`).join(' ') + ` Okunan döşemeler: ${S.qrSay.kod.join(', ') || 'yok'}. Pul QR'ı kapatmasın, sivri alt uçta dursun. Telefonu masanın tam üstünden, döşemeler ekranı dolduracak kadar yakından tutup yeniden bakın.`;
+      ? L(`${a.em} pulu iki döşemenin sınırında, hangisinde olduğundan emin değilim.`, `The ${a.em} token is on the border of two tiles; I am not sure which one it is on.`)
+      : L(`${a.em} pulunun altındaki döşemenin QR'ını okuyamadım.`, `I could not read the QR of the tile under the ${a.em} token.`)).join(' ') + L(` Okunan döşemeler: ${S.qrSay.kod.join(', ') || 'yok'}. Pul QR'ı kapatmasın, sivri alt uçta dursun. Telefonu masanın tam üstünden, döşemeler ekranı dolduracak kadar yakından tutup yeniden bakın.`, ` Tiles read: ${S.qrSay.kod.join(', ') || 'none'}. The token must not cover the QR; keep it on the pointed bottom end. Hold the phone straight above the table, close enough for the tiles to fill the screen, and look again.`);
     return;
   }
   yenile(); kontrolEt(); durumCiz(); yenile();
-  document.getElementById('durum').textContent = `QR ile ${S.qrSay.dos} döşeme${S.qrSay.hay ? ', ' + S.qrSay.hay + ' hayvan pulu' : ''} okundu.` + (S.qrHayvan.length ? ' ' + S.qrHayvan.map(a => `${a.em} ${TUR[a.tur].ad.toLocaleLowerCase('tr')} döşemesinde (${a.kod.slice(3)}).`).join(' ') : '') + ' Masada bundan çok döşeme varsa telefonu biraz yaklaştırıp yeniden bakın. Perdeyi sürükleyin.';
+  document.getElementById('durum').textContent = L(`QR ile ${S.qrSay.dos} döşeme${S.qrSay.hay ? ', ' + S.qrSay.hay + ' hayvan pulu' : ''} okundu.` + (S.qrHayvan.length ? ' ' + S.qrHayvan.map(a => `${a.em} ${TUR[a.tur].ad.toLocaleLowerCase('tr')} döşemesinde (${a.kod.slice(3)}).`).join(' ') : '') + ' Masada bundan çok döşeme varsa telefonu biraz yaklaştırıp yeniden bakın. Perdeyi sürükleyin.', `Read ${S.qrSay.dos} tile${S.qrSay.dos === 1 ? '' : 's'}${S.qrSay.hay ? ' and ' + S.qrSay.hay + ' animal token' + (S.qrSay.hay === 1 ? '' : 's') : ''} by QR.` + (S.qrHayvan.length ? ' ' + S.qrHayvan.map(a => `${a.em} on the ${TUR[a.tur].ad.toLowerCase()} tile (${a.kod.slice(3)}).`).join(' ') : '') + ' If there are more tiles on the table, move the phone a little closer and look again. Drag the curtain.');
 }
 /* ---------- Canlı kamera ---------- */
 let akis = null;
@@ -11326,10 +11451,10 @@ canliBtn.addEventListener('click', async () => {
     akis = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 4096 }, height: { ideal: 3072 } }, audio: false });
     vid.srcObject = akis; vid.hidden = false; await vid.play();
     canliBtn.hidden = true; bakBtn.hidden = false;
-    document.getElementById('durum').textContent = 'Telefonu masanın üstüne, döşemeleri görecek şekilde tutun ve "Şimdi 2100\'e bak" düğmesine basın.';
+    document.getElementById('durum').textContent = L('Telefonu masanın üstüne, döşemeleri görecek şekilde tutun ve "Şimdi 2100\'e bak" düğmesine basın.', 'Hold the phone over the table so it can see the tiles, and press “Look at 2100 now”.');
   } catch (e) {
     kameraKapat();
-    document.getElementById('durum').textContent = 'Kamera açılamadı. Tarayıcının kamera iznini verin ya da "Fotoğraf çek" düğmesini kullanın.';
+    document.getElementById('durum').textContent = L('Kamera açılamadı. Tarayıcının kamera iznini verin ya da "Fotoğraf çek" düğmesini kullanın.', 'The camera could not be opened. Allow camera access in the browser, or use “Take a photo”.');
   }
 });
 bakBtn.addEventListener('click', async () => {
@@ -11345,6 +11470,20 @@ bakBtn.addEventListener('click', async () => {
   document.getElementById('durumKart').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
+function statikDil() {
+  document.documentElement.lang = DIL; document.title = L('Zaman Dürbünü', 'Time Telescope');
+  document.querySelectorAll('[data-en]').forEach(el => { if (el.dataset.tr == null) el.dataset.tr = el.innerHTML; el.innerHTML = DIL === 'en' ? el.dataset.en : el.dataset.tr; });
+  document.querySelectorAll('[data-dil]').forEach(b => b.setAttribute('aria-pressed', b.dataset.dil === DIL));
+  document.getElementById('dilBtn').textContent = L('English', 'Türkçe');
+}
+function dilDegis(dil) {
+  DIL = dil; try { localStorage.setItem('zd-dil', dil); } catch (e) {}
+  veriDil(); statikDil(); chipsCiz(); chipYenile(); paletCiz(); izgaraCiz(); stripCiz(); yenile(); durumCiz();
+  if (!S.foto) document.getElementById('durum').textContent = ilkMesaj();
+}
+document.querySelectorAll('[data-dil]').forEach(b => b.addEventListener('click', () => dilDegis(b.dataset.dil)));
+document.getElementById('dilBtn').addEventListener('click', () => dilDegis(DIL === 'en' ? 'tr' : 'en'));
+veriDil(); statikDil(); chipsCiz(); paletCiz();
 stripCiz(); durumSec(0);
 // Açılış ekranı: her açılışta görünür, Başla ile kapanır; başlıktaki "Kurallar" ile yeniden açılır
 const acilis = document.getElementById('acilis');
