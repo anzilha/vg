@@ -10834,7 +10834,7 @@ function durumCiz() {
   if (k && k.asama === 'soru') {
     const q = d.soru;
     alt = `<div class="sonuc ok" role="status"><b>Masadaki değişiklik 2100'de işe yaradı.</b>`;
-    if (q.tip === 'canli') alt += `<span>Şimdi hangi canlının geri döndüğünü bulun. Pulunu QR yüzü üstte, doğru döşemenin alt yarısına koyup dürbünle yeniden bakın ya da aşağıdan seçin.</span>
+    if (q.tip === 'canli') alt += `<span>Şimdi hangi canlının geri döndüğünü bulun. Pulunu QR yüzü üstte, doğru döşemenin sivri alt ucuna (pul yeri), QR'ı kapatmadan koyup dürbünle yeniden bakın ya da aşağıdan seçin.</span>
       <div class="secim" role="group" aria-label="Canlı">${CANLI.map(([em, ad]) => `<button class="chip" type="button" data-canli="${em}" aria-pressed="${S.cevap.canli === em}">${em} ${ad}</button>`).join('')}</div>
       <div class="secim" role="group" aria-label="Döşeme">${HAB.map(t => { const [R, G2, B] = TUR[t].renk; return `<button class="chip" type="button" data-yer="${t}" aria-pressed="${S.cevap.yer === t}"><i class="sw" style="background:rgb(${R},${G2},${B})"></i>${TUR[t].ad}</button>`; }).join('')}</div>`;
     else alt += `<span><b>${q.metin}</b></span><div class="secenek">${q.secenekler.map((x, i) => `<button class="chip" type="button" data-sec="${i}" aria-pressed="${S.cevap.sec === i}">${'ABCD'[i]}) ${x}</button>`).join('')}</div>`;
@@ -11011,24 +11011,33 @@ const QR_HAY = { KEFAL: '🐟', AYI: '🐻', KELAYNAK: '🐦', KECI: '🐐', KOY
 let dedektor = null;
 try { if ('BarcodeDetector' in window) dedektor = new BarcodeDetector({ formats: ['qr_code'] }); } catch (e) { dedektor = null; }
 // Bir görüntüdeki bütün QR kodlarını bulur: [{deger, x, y, b}]
+// Köşeler sol üst, sağ üst, sağ alt, sol alt sırasında: merkez, kenar boyu ve QR'ın yukarı yönü
+function koseden(p) {
+  const x = p.reduce((a, q) => a + q.x, 0) / 4, y = p.reduce((a, q) => a + q.y, 0) / 4;
+  let ux = (p[0].x + p[1].x - p[2].x - p[3].x) / 2, uy = (p[0].y + p[1].y - p[2].y - p[3].y) / 2; const u = Math.hypot(ux, uy) || 1;
+  return { x, y, b: Math.hypot(p[1].x - p[0].x, p[1].y - p[0].y), ux: ux / u, uy: uy / u };
+}
 async function qrBul(kaynak) {
   if (dedektor) {
-    try { const r = await dedektor.detect(kaynak); if (r.length) return r.map(k => { const p = k.cornerPoints; const x = p.reduce((a, q) => a + q.x, 0) / 4, y = p.reduce((a, q) => a + q.y, 0) / 4; return { deger: k.rawValue, x, y, b: Math.hypot(p[1].x - p[0].x, p[1].y - p[0].y) }; }); } catch (e) {}
+    try { const r = await dedektor.detect(kaynak); if (r.length) return r.map(k => ({ deger: k.rawValue, ...koseden(k.cornerPoints) })); } catch (e) {}
   }
-  // Yedek: jsQR bir karede tek kod okur; bu yüzden fotoğrafı üç ölçekte üst üste binen pencerelerle tarar.
-  // Çok büyük fotoğraflarda jsQR modülleri kaçırır; en uzun kenarı 1400 piksele indir
-  const w0 = kaynak.width || kaynak.videoWidth, h0 = kaynak.height || kaynak.videoHeight, oran = Math.min(1, 1400 / Math.max(w0, h0));
-  const w = Math.round(w0 * oran), h = Math.round(h0 * oran);
-  const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(kaynak, 0, 0, w, h);
+  // Yedek: jsQR bir karede tek kod okur; bu yüzden fotoğrafı birkaç ölçekte üst üste binen pencerelerle tarar.
+  // Çok büyük fotoğrafta jsQR modülleri kaçırır, çok küçültülmüşte de eğik QR'ları; iki çözünürlükte bakılır.
+  const w0 = kaynak.width || kaynak.videoWidth, h0 = kaynak.height || kaynak.videoHeight;
   const bulunan = [], gor = new Set();
-  for (const bol of [3, 5, 8]) {
-    const s = Math.round(Math.max(w, h) / bol), ad = Math.round(s / 2);
-    for (let y0 = 0; y0 < h; y0 += ad) for (let x0 = 0; x0 < w; x0 += ad) {
-      const ww = Math.min(s, w - x0), hh = Math.min(s, h - y0); if (ww < 40 || hh < 40) continue;
-      const k = jsQR(x.getImageData(x0, y0, ww, hh).data, ww, hh, { inversionAttempts: 'dontInvert' });
-      if (!k || gor.has(k.data)) continue; gor.add(k.data);
-      const L = k.location, pts = [L.topLeftCorner, L.topRightCorner, L.bottomRightCorner, L.bottomLeftCorner];
-      bulunan.push({ deger: k.data, x: (x0 + pts.reduce((a, q) => a + q.x, 0) / 4) / oran, y: (y0 + pts.reduce((a, q) => a + q.y, 0) / 4) / oran, b: Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y) / oran });
+  for (const hedef of [1400, 2200]) {
+    const oran = Math.min(1, hedef / Math.max(w0, h0)), w = Math.round(w0 * oran), h = Math.round(h0 * oran);
+    if (hedef > 1400 && oran === Math.min(1, 1400 / Math.max(w0, h0))) break;
+    const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(kaynak, 0, 0, w, h);
+    for (const bol of [3, 5, 8]) {
+      const s = Math.round(Math.max(w, h) / bol), ad = Math.round(s / 2);
+      for (let y0 = 0; y0 < h; y0 += ad) for (let x0 = 0; x0 < w; x0 += ad) {
+        const ww = Math.min(s, w - x0), hh = Math.min(s, h - y0); if (ww < 40 || hh < 40) continue;
+        const k = jsQR(x.getImageData(x0, y0, ww, hh).data, ww, hh, { inversionAttempts: 'dontInvert' });
+        if (!k || gor.has(k.data)) continue; gor.add(k.data);
+        const L = k.location, pts = [L.topLeftCorner, L.topRightCorner, L.bottomRightCorner, L.bottomLeftCorner];
+        bulunan.push({ deger: k.data, ...koseden(pts.map(q => ({ x: (x0 + q.x) / oran, y: (y0 + q.y) / oran }))) });
+      }
     }
   }
   return bulunan;
@@ -11053,44 +11062,28 @@ function qrMasa(w, h, dos) {
   const gen = (yak.length ? yak[Math.floor(yak.length / 2)] : bOrt * 2) * sc, R = gen / Math.sqrt(3) * 1.06; // etiket döşemenin yaklaşık yarısı kadar
   dos.forEach(d => {
     const cx = d.x * sc, cy = d.y * sc; x.beginPath();
-    for (let k = 0; k < 6; k++) { const a = Math.PI / 6 + k * Math.PI / 3; x.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); }
+    const don = d.ux == null ? 0 : Math.atan2(d.ux, -d.uy);
+    for (let k = 0; k < 6; k++) { const a = don + Math.PI / 6 + k * Math.PI / 3; x.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R); }
     x.closePath(); x.fillStyle = `rgb(${VARSAYILAN[d.tur].renk.join(',')})`; x.fill();
   });
   return { c, gen: gen / sc };
 }
-function pulAltRengi(kare, a) {
-  const x = kare.getContext('2d', { willReadFrequently: true }), say = {};
-  const ref = HAB.map(t => [t, lab(VARSAYILAN[t].renk)]);
-  for (let k = 0; k < 48; k++) {
-    const aci = k * Math.PI / 24;
-    for (const r of [1.3, 1.45, 1.6]) {
-      const px = Math.round(a.x + Math.cos(aci) * r * a.b), py = Math.round(a.y + Math.sin(aci) * r * a.b);
-      if (px < 0 || py < 0 || px >= kare.width || py >= kare.height) continue;
-      const d = x.getImageData(px, py, 1, 1).data, L = lab([d[0], d[1], d[2]]);
-      if (L[0] > 90 || L[0] < 18) continue;
-      let en = null, ed = 45;
-      ref.forEach(([t, R]) => { const m = Math.hypot(R[0] - L[0], R[1] - L[1], R[2] - L[2]); if (m < ed) { ed = m; en = t; } });
-      if (en) say[en] = (say[en] || 0) + 1;
-    }
-  }
-  const en = Object.entries(say).sort((p, q) => q[1] - p[1])[0];
-  return en && en[1] >= 8 ? en[0] : null;
-}
 async function qrIleBak(kare) {
   const kodlar = await qrBul(kare), { dos, hay } = qrAyir(kodlar);
-  S.qrHayvanSay = hay.length; S.pulTahmin = [];
+  S.qrHayvanSay = hay.length;
   if (!dos.length) return false;
   for (const k in TUR) TUR[k].renk = VARSAYILAN[k].renk.slice(); labYenile();
-  // Pul döşemenin QR'ını kapatmışsa: pulun çevresindeki renge bakıp altındaki döşemeyi tanı
-  hay.forEach(a => {
-    const yakin = Math.min(...dos.map(d => Math.hypot(d.x - a.x, d.y - a.y)));
-    if (yakin < a.b * 2.2) return;
-    const tur = pulAltRengi(kare, a);
-    if (tur) { dos.push({ deger: 'pul-alti', x: a.x, y: a.y, b: a.b, tur }); S.pulTahmin.push(`${a.em} pulu bir QR'ı kapatıyor, altındaki döşemeyi renginden ${TUR[tur].ad.toLocaleLowerCase('tr')} saydım. Yanlışsa pulu döşemenin alt kenarına kaydırın.`); }
-  });
+  // QR döşemenin merkezinin 0,6 cm üstünde basılı (QR kenarı 1,5 cm): gerçek merkeze kaydır
+  dos.forEach(d => { d.x -= d.ux * d.b * 0.4; d.y -= d.uy * d.b * 0.4; });
   const { c, gen } = qrMasa(kare.width, kare.height, dos);
   // hayvan pulunu en yakın döşemeye bağla
-  S.qrHayvan = hay.map(a => { let en = null, ed = Infinity; dos.forEach(d => { const m = Math.hypot(d.x - a.x, d.y - a.y); if (m < ed) { ed = m; en = d; } }); return { em: a.em, tur: en && ed < gen * 1.3 ? en.tur : null }; });
+  // Hayvan pulu: en yakın döşeme merkezi açıkça yakınsa o döşemede; değilse tahmin etme, pulun yerini değiştirmesini iste
+  S.qrHayvan = hay.map(a => {
+    const u = dos.map(d => ({ d, m: Math.hypot(d.x - a.x, d.y - a.y) })).sort((p, q) => p.m - q.m), [b1, b2] = u;
+    if (!b1 || b1.m > gen * 0.62) return { em: a.em, tur: null, sorun: 'disari' };
+    if (b2 && b2.m < b1.m * 1.3) return { em: a.em, tur: null, sorun: 'sinir' };
+    return { em: a.em, tur: b1.d.tur, kod: b1.d.deger };
+  });
   S.img = c; S.foto = true; cozumle(c);
   const g = document.createElement('canvas'); g.width = G.W; g.height = G.H; g.getContext('2d').drawImage(kare, 0, 0, G.W, G.H); G.gercek = g;
   S.qrSay = { dos: dos.length, hay: hay.length };
@@ -11108,8 +11101,17 @@ async function kareyeBak(c) {
       : 'Döşeme QR\'ı göremedim. Başlangıç planındaki bütün döşemeleri dizin, telefonu 30-40 cm yukarıdan, gölge düşürmeden tutun.';
     S.qrHayvan = []; return;
   }
-  S.ornek = false; yenile(); kontrolEt(); durumCiz(); yenile();
-  document.getElementById('durum').textContent = `QR ile ${S.qrSay.dos} döşeme${S.qrSay.hay ? ', ' + S.qrSay.hay + ' hayvan pulu' : ''} okundu. Perdeyi sürükleyin.` + (S.pulTahmin.length ? ' ' + S.pulTahmin.join(' ') : '');
+  S.ornek = false;
+  const belirsiz = S.qrHayvan.filter(a => !a.tur);
+  if (belirsiz.length) {
+    yenile(); durumCiz();
+    document.getElementById('durum').textContent = belirsiz.map(a => a.sorun === 'sinir'
+      ? `${a.em} pulu iki döşemenin sınırında, hangisinde olduğundan emin değilim.`
+      : `${a.em} pulu bir döşemenin üstünde görünmüyor ya da döşemenin QR'ını kapatıyor.`).join(' ') + ' Pulu döşemenin sivri alt ucuna, QR\'ı kapatmadan koyup yeniden bakın.';
+    return;
+  }
+  yenile(); kontrolEt(); durumCiz(); yenile();
+  document.getElementById('durum').textContent = `QR ile ${S.qrSay.dos} döşeme${S.qrSay.hay ? ', ' + S.qrSay.hay + ' hayvan pulu' : ''} okundu.` + (S.qrHayvan.length ? ' ' + S.qrHayvan.map(a => `${a.em} ${TUR[a.tur].ad.toLocaleLowerCase('tr')} döşemesinde (${a.kod.slice(3)}).`).join(' ') : '') + ' Masada bundan çok döşeme varsa telefonu biraz yaklaştırıp yeniden bakın. Perdeyi sürükleyin.';
 }
 /* ---------- Canlı kamera ---------- */
 let akis = null;
