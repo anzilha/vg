@@ -125,7 +125,7 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
 <body>
 <div class="wrap">
   <header>
-    <h1>Zaman Dürbünü <small id="surum" style="font:600 12px/1 var(--f-body, sans-serif);opacity:.6;vertical-align:middle">Sürüm 8 · 28 Ekim</small></h1>
+    <h1>Zaman Dürbünü <small id="surum" style="font:600 12px/1 var(--f-body, sans-serif);opacity:.6;vertical-align:middle">Sürüm 9 · 28 Ekim</small></h1>
     <p>Deniz 2100'den 10 durum gönderdi. Her durumu masada Cascadia döşemeleriyle düzeltin, fotoğrafını çekin. Dürbün çözümünüzün 2100'de işe yarayıp yaramadığını gösterir.</p>
   </header>
 
@@ -11128,6 +11128,9 @@ async function qrIleBak(kare) {
   return true;
 }
 
+// Okumadan sonra perdeyi kendiliğinden sola kaydır: 2100 hemen görünsün
+function perdeKaydir() { const t0 = performance.now(), p0 = S.perde, p1 = 0.12;
+  const adim = t => { const k = Math.min(1, (t - t0) / 1200); S.perde = p0 + (p1 - p0) * k * k * (3 - 2 * k); bas(); if (k < 1) requestAnimationFrame(adim); }; requestAnimationFrame(adim); }
 async function kareyeBak(c) {
   document.getElementById('durum').textContent = 'Dürbün bakıyor…';
   S.qrHayvan = []; S.qrSay = null;
@@ -11139,7 +11142,7 @@ async function kareyeBak(c) {
       : 'Döşeme QR\'ı göremedim. Başlangıç planındaki bütün döşemeleri dizin, telefonu 30-40 cm yukarıdan, gölge düşürmeden tutun.';
     S.qrHayvan = []; return;
   }
-  S.ornek = false;
+  S.ornek = false; perdeKaydir();
   const belirsiz = S.qrHayvan.filter(a => !a.tur);
   if (belirsiz.length) {
     yenile(); durumCiz();
