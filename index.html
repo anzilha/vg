@@ -134,7 +134,7 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
     <div class="durum" id="durumKart"></div>
   </section>
 
-  <details class="card" aria-label="Masayı ekrana aktarın">
+  <details class="card" aria-label="Masayı ekrana aktarın" hidden>
     <summary class="aktar-ust"><h2 style="display:inline">Kamera yoksa: masayı ekrana aktarın</h2> <span class="muted" id="degisim"></span></summary>
     <p class="muted" style="margin:0">Masada yaptığınız değişikliği burada da yapın: önce bir döşeme türü seçin, sonra altıgene dokunun. Fotoğraf çalışıyorsa bunun yerine aşağıdan fotoğraf da çekebilirsiniz.</p>
     <div class="secim" id="palet" role="group" aria-label="Döşeme türü"></div>
@@ -10979,6 +10979,7 @@ function qrMasa(w, h, dos) {
 }
 async function qrIleBak(kare) {
   const kodlar = await qrBul(kare), { dos, hay } = qrAyir(kodlar);
+  S.qrHayvanSay = hay.length;
   if (!dos.length) return false;
   for (const k in TUR) TUR[k].renk = VARSAYILAN[k].renk.slice(); labYenile();
   const { c, gen } = qrMasa(kare.width, kare.height, dos);
@@ -10994,10 +10995,15 @@ async function kareyeBak(c) {
   document.getElementById('durum').textContent = 'Dürbün bakıyor…';
   S.qrHayvan = []; S.qrSay = null;
   const qr = await qrIleBak(c);
-  if (!qr) { S.img = c; S.foto = true; cozumle(c); }
+  if (!qr) {
+    const hay = S.qrHayvanSay || 0;
+    document.getElementById('durum').textContent = hay
+      ? 'Hayvan pulu görüldü ama döşeme QR\'ı görülmedi. Pul döşemenin QR\'ını kapatmasın: pulu döşemenin alt yarısına koyun.'
+      : 'Döşeme QR\'ı göremedim. Başlangıç planındaki bütün döşemeleri dizin, telefonu 30-40 cm yukarıdan, gölge düşürmeden tutun.';
+    S.qrHayvan = []; return;
+  }
   S.ornek = false; yenile(); kontrolEt(); durumCiz(); yenile();
-  document.getElementById('durum').textContent = qr ? `QR ile ${S.qrSay.dos} döşeme${S.qrSay.hay ? ', ' + S.qrSay.hay + ' hayvan pulu' : ''} okundu. Perdeyi sürükleyin.`
-    : (G.parcalar.length ? `QR etiketi bulunamadı, renklere bakıldı: ${G.parcalar.length} parça görüldü.` : 'Döşeme göremedim. Telefonu biraz yaklaştırın ve etiketlerin net göründüğünden emin olun.');
+  document.getElementById('durum').textContent = `QR ile ${S.qrSay.dos} döşeme${S.qrSay.hay ? ', ' + S.qrSay.hay + ' hayvan pulu' : ''} okundu. Perdeyi sürükleyin.`;
 }
 /* ---------- Canlı kamera ---------- */
 let akis = null;
