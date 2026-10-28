@@ -125,7 +125,7 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
 <body>
 <div class="wrap">
   <header>
-    <h1>Zaman Dürbünü <small id="surum" style="font:600 12px/1 var(--f-body, sans-serif);opacity:.6;vertical-align:middle">Sürüm 7 · 28 Ekim</small></h1>
+    <h1>Zaman Dürbünü <small id="surum" style="font:600 12px/1 var(--f-body, sans-serif);opacity:.6;vertical-align:middle">Sürüm 8 · 28 Ekim</small></h1>
     <p>Deniz 2100'den 10 durum gönderdi. Her durumu masada Cascadia döşemeleriyle düzeltin, fotoğrafını çekin. Dürbün çözümünüzün 2100'de işe yarayıp yaramadığını gösterir.</p>
   </header>
 
@@ -11124,7 +11124,7 @@ async function qrIleBak(kare) {
   });
   S.img = c; S.foto = true; cozumle(c);
   const g = document.createElement('canvas'); g.width = G.W; g.height = G.H; g.getContext('2d').drawImage(kare, 0, 0, G.W, G.H); G.gercek = g;
-  S.qrSay = { dos: dos.length, hay: hay.length };
+  S.qrSay = { dos: dos.length, hay: hay.length, kod: dos.map(d => d.deger.slice(3)) };
   return true;
 }
 
@@ -11145,7 +11145,7 @@ async function kareyeBak(c) {
     yenile(); durumCiz();
     document.getElementById('durum').textContent = belirsiz.map(a => a.sorun === 'sinir'
       ? `${a.em} pulu iki döşemenin sınırında, hangisinde olduğundan emin değilim.`
-      : `${a.em} pulu bir döşemenin üstünde görünmüyor ya da döşemenin QR'ını kapatıyor.`).join(' ') + ' Pulu döşemenin sivri alt ucuna, QR\'ı kapatmadan koyup yeniden bakın.';
+      : `${a.em} pulunun altındaki döşemenin QR'ını okuyamadım.`).join(' ') + ` Okunan döşemeler: ${S.qrSay.kod.join(', ') || 'yok'}. Pul QR'ı kapatmasın, sivri alt uçta dursun. Telefonu masanın tam üstünden, döşemeler ekranı dolduracak kadar yakından tutup yeniden bakın.`;
     return;
   }
   yenile(); kontrolEt(); durumCiz(); yenile();
@@ -11157,7 +11157,7 @@ const vid = document.getElementById('canli'), canliBtn = document.getElementById
 function kameraKapat() { if (akis) akis.getTracks().forEach(t => t.stop()); akis = null; vid.hidden = true; bakBtn.hidden = true; canliBtn.hidden = false; }
 canliBtn.addEventListener('click', async () => {
   try {
-    akis = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 } }, audio: false });
+    akis = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 4096 }, height: { ideal: 3072 } }, audio: false });
     vid.srcObject = akis; vid.hidden = false; await vid.play();
     canliBtn.hidden = true; bakBtn.hidden = false;
     document.getElementById('durum').textContent = 'Telefonu masanın üstüne, döşemeleri görecek şekilde tutun ve "Şimdi 2100\'e bak" düğmesine basın.';
@@ -11167,8 +11167,14 @@ canliBtn.addEventListener('click', async () => {
   }
 });
 bakBtn.addEventListener('click', async () => {
-  const c = document.createElement('canvas'); c.width = vid.videoWidth; c.height = vid.videoHeight;
-  c.getContext('2d').drawImage(vid, 0, 0); kameraKapat();
+  // Mümkünse kameranın tam çözünürlüklü fotoğrafını al (video karesi küçük QR'ları okumaya yetmez)
+  let c = null;
+  try {
+    if ('ImageCapture' in window && akis) { const bmp = await createImageBitmap(await new ImageCapture(akis.getVideoTracks()[0]).takePhoto());
+      if (bmp.width > vid.videoWidth) { c = document.createElement('canvas'); c.width = bmp.width; c.height = bmp.height; c.getContext('2d').drawImage(bmp, 0, 0); } }
+  } catch (e) {}
+  if (!c) { c = document.createElement('canvas'); c.width = vid.videoWidth; c.height = vid.videoHeight; c.getContext('2d').drawImage(vid, 0, 0); }
+  kameraKapat();
   await kareyeBak(c);
   document.getElementById('durumKart').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
