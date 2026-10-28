@@ -10672,22 +10672,101 @@ function gelecekCiz(h) {
     d[i] = r; d[i + 1] = g; d[i + 2] = b;
   }
   const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d'); x.putImageData(out, 0, 0);
-  const fs = Math.max(22, W / 22);
-  x.font = `${fs}px serif`; x.textAlign = 'center'; x.textBaseline = 'middle';
   const goster = S.d === 9 || (S.sonuc && (S.sonuc.asama === 'odul' || S.sonuc.asama === 'karar'));
-  h.tur.forEach(t => { if (!goster || !t.var || !t.yer) return; const X = (t.yer.cx + 0.5) * cs, Y = (t.yer.cy + 0.5) * cs;
-    x.fillStyle = 'rgba(255,255,255,.75)'; x.beginPath(); x.arc(X, Y, fs * 0.72, 0, 7); x.fill(); x.fillStyle = '#000'; x.fillText(t.em, X, Y + 1); });
+  animKur(h, goster);
   gelecek = c;
 }
 
+/* ---------- 2100 canlandırma: hayvanlar yürür, kefal derede yüzer, su dalgalanır ---------- */
+const SPRITE = {};
+Object.entries({"kefal": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M12,52 C26,36 58,32 78,46 L92,34 L88,52 L92,68 L78,57 C58,70 26,68 12,52 Z\" fill=\"#c9d3dc\"/><path d=\"M12,52 C26,36 58,32 78,46 C58,44 30,46 12,52 Z\" fill=\"#4f6d86\"/><path d=\"M44,40 C50,30 60,31 64,40 Z\" fill=\"#4f6d86\"/><path d=\"M50,64 C54,72 60,71 62,63 Z\" fill=\"#8fa3b4\"/><path d=\"M36,54 C40,60 46,60 48,55 Z\" fill=\"#8fa3b4\"/><circle cx=\"22\" cy=\"49\" r=\"3\" fill=\"#1d2a33\"/><circle cx=\"21.2\" cy=\"48.2\" r=\"1\" fill=\"#fff\"/><path d=\"M30,44 C33,50 33,56 30,61\" stroke=\"#8fa3b4\" stroke-width=\"1.5\" fill=\"none\"/><path d=\"M14,53 L19,54\" stroke=\"#1d2a33\" stroke-width=\"1.2\"/></svg>", "ayi": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M14,56 C12,44 20,36 30,36 C34,30 42,30 46,34 C56,28 74,30 82,40 C88,46 88,56 84,62 L84,78 L76,78 L74,66 L58,66 L56,78 L48,78 L46,64 L36,62 L36,78 L28,78 L28,62 C20,62 15,60 14,56 Z\" fill=\"#6b4a2b\"/><path d=\"M14,56 C12,50 14,46 18,44 L20,52 Z\" fill=\"#3b2817\"/><circle cx=\"31\" cy=\"35\" r=\"4\" fill=\"#6b4a2b\"/><circle cx=\"31\" cy=\"35\" r=\"2\" fill=\"#3b2817\"/><circle cx=\"24\" cy=\"45\" r=\"2\" fill=\"#1a120a\"/><circle cx=\"14.5\" cy=\"52\" r=\"2.2\" fill=\"#1a120a\"/><path d=\"M46,34 C56,28 74,30 82,40 C70,36 56,36 46,40 Z\" fill=\"#7d5934\"/></svg>", "kelaynak": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M40,40 C52,34 70,40 78,56 L92,70 L76,66 C66,72 50,72 42,64 C36,58 36,48 40,40 Z\" fill=\"#2c3a33\"/><path d=\"M48,44 C58,42 70,48 76,60 C66,58 56,56 48,50 Z\" fill=\"#3f6b55\"/><path d=\"M44,44 C40,36 36,28 30,24\" stroke=\"#2c3a33\" stroke-width=\"7\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M38,32 L46,30 M39,36 L47,35 M41,40 L48,40\" stroke=\"#2c3a33\" stroke-width=\"2.5\"/><circle cx=\"28\" cy=\"22\" r=\"6\" fill=\"#d9614c\"/><path d=\"M24,22 C16,24 10,32 8,42\" stroke=\"#c8473a\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\"/><circle cx=\"29\" cy=\"20.5\" r=\"1.4\" fill=\"#fff\"/><circle cx=\"29\" cy=\"20.5\" r=\".7\" fill=\"#1a1a1a\"/><path d=\"M52,70 L50,88 M60,70 L62,88\" stroke=\"#c8473a\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><path d=\"M46,88 L54,88 M58,88 L66,88\" stroke=\"#c8473a\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg>", "keci": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M30,26 C40,8 64,6 80,20 C66,14 46,16 36,30 Z\" fill=\"#7a6a55\"/><path d=\"M30,26 C40,8 64,6 80,20\" stroke=\"#5a4d3d\" stroke-width=\"1\" fill=\"none\"/><path d=\"M34,22 L37,18 M40,17 L42,13 M47,14 L48,10 M54,12 L55,9 M61,12 L61,9\" stroke=\"#5a4d3d\" stroke-width=\"1.2\"/><path d=\"M18,42 C18,34 24,28 32,28 C38,28 40,34 40,40 L42,46 C52,42 70,42 80,48 C86,52 86,60 82,64 L82,84 L76,84 L74,68 L62,68 L60,84 L54,84 L52,66 L46,64 L46,84 L40,84 L40,62 C36,58 34,54 34,50 L26,50 C22,50 18,48 18,42 Z\" fill=\"#a08566\"/><path d=\"M22,50 C22,56 24,62 28,64 C28,58 28,54 26,50 Z\" fill=\"#5a4d3d\"/><circle cx=\"27\" cy=\"37\" r=\"1.8\" fill=\"#1a1a1a\"/><path d=\"M34,32 L40,26\" stroke=\"#8a7458\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M40,46 C52,44 66,46 76,52 C66,52 52,52 42,52 Z\" fill=\"#7a6a55\"/></svg>", "koyun": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><path d=\"M16,44 C16,36 22,30 30,30 C38,30 42,36 42,42 L44,46 C54,40 72,42 80,50 C86,56 84,64 80,66 L80,86 L74,86 L72,70 L60,70 L58,86 L52,86 L50,68 L46,66 L46,86 L40,86 L40,64 C36,60 34,56 34,52 L26,52 C20,52 16,50 16,44 Z\" fill=\"#a8613a\"/><path d=\"M46,60 C56,66 68,66 78,62 L80,66 C70,72 56,72 46,66 Z\" fill=\"#f2ebe0\"/><path d=\"M16,44 C16,48 20,52 26,52 L24,46 Z\" fill=\"#f2ebe0\"/><circle cx=\"25\" cy=\"39\" r=\"1.8\" fill=\"#1a1a1a\"/><path d=\"M32,32 C36,22 48,22 50,32 C52,42 42,46 38,40 C35,36 40,32 43,35\" stroke=\"#c9b48e\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M32,32 C36,22 48,22 50,32 C52,42 42,46 38,40\" stroke=\"#8f7a55\" stroke-width=\"1\" fill=\"none\"/></svg>"}).forEach(([k, v]) => { const im = new Image(); im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(v); SPRITE[k] = im; });
+const EM_SPR = { '🐻': 'ayi', '🐟': 'kefal', '🐦': 'kelaynak', '🐐': 'keci', '🐏': 'koyun' };
+// boy: bir döşemeye oran, hiz: genişlik/sn, dur: duraklama (sn)
+const AKTOR = { kefal: { boy: .5, hiz: .06, dur: .3 }, ayi: { boy: .8, hiz: .025, dur: 1.6 }, kelaynak: { boy: .65, hiz: .07, dur: 1.4 }, keci: { boy: .7, hiz: .035, dur: 1.1 }, koyun: { boy: .65, hiz: .03, dur: 1.3 } };
+const azHareket = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function animKur(h, goster) {
+  const { cs, gw, W, sinif, parcalar: P } = G, rnd = n => gurultu(n * 7.31 + 1.7);
+  const su = []; for (let i = 0; i < h.olu.length; i++) if ((sinif[i] === 'nehir' || sinif[i] === 'sulak') && !h.olu[i]) su.push(i);
+  const yolKur = (p, tohum) => {
+    let hc = p.hucre.filter(j => !h.olu[j]); if (!hc.length) hc = p.hucre;
+    const L = []; for (let k = 0; k < 6; k++) { const j = hc[Math.floor(rnd(tohum + k) * hc.length)]; L.push([(j % gw + .5) * cs, (((j / gw) | 0) + .5) * cs]); }
+    return L;
+  };
+  const aktor = [];
+  if (goster) h.tur.forEach((t, ti) => {
+    if (!t.var || !t.yer) return; const ad = EM_SPR[t.em], o = AKTOR[ad];
+    const ekle = (p, k) => { const yol = yolKur(p, ti * 50 + k * 13), sure = []; let top = 0;
+      yol.forEach((a, i) => { const b = yol[(i + 1) % yol.length], d = Math.hypot(b[0] - a[0], b[1] - a[1]) / (o.hiz * W) + .4; sure.push(d); top += d + o.dur; });
+      aktor.push({ ad, o, yol, sure, top, faz: rnd(ti * 3 + k) * top }); };
+    ekle(t.yer, 0);
+    if (ad === 'kefal') { ekle(t.yer, 1); const g = [...t.yer.komsu].map(k => P[k]).find(q => q.tur === 'sulak' && q.yasar); if (g) ekle(g, 2); }
+  });
+  const dos = Math.min(W * .2, Math.max(W * .06, Math.sqrt(Math.min(...P.map(p => p.boy))) * cs));
+  G.anim = { su, aktor, dalga: [], dos };
+  animBaslat();
+}
+function aktorYer(a, t) {
+  let u = (t + a.faz) % a.top;
+  for (let i = 0; i < a.yol.length; i++) {
+    const p = a.yol[i], q = a.yol[(i + 1) % a.yol.length];
+    if (u < a.sure[i]) { const k = u / a.sure[i], e = k * k * (3 - 2 * k); return { x: karis(p[0], q[0], e), y: karis(p[1], q[1], e), yon: q[0] > p[0] ? 1 : -1, yuru: true, k }; }
+    u -= a.sure[i];
+    if (u < a.o.dur) return { x: q[0], y: q[1], yon: a.yol[(i + 2) % a.yol.length][0] > q[0] ? 1 : -1, yuru: false, k: u / a.o.dur };
+    u -= a.o.dur;
+  }
+  return { x: a.yol[0][0], y: a.yol[0][1], yon: -1, yuru: false, k: 0 };
+}
+function animCiz(t) {
+  const A = G.anim; if (!A) return; const { cs, gw, W } = G, c = cx;
+  // suda dalga halkaları ve parıltılar
+  if (A.su.length) {
+    A.dalga = A.dalga.filter(d => t - d.t0 < 2.4 && t >= d.t0);
+    const hedefSay = Math.min(14, Math.ceil(A.su.length / 40));
+    while (A.dalga.length < hedefSay) { const j = A.su[Math.floor(Math.random() * A.su.length)]; A.dalga.push({ x: (j % gw + Math.random()) * cs, y: (((j / gw) | 0) + Math.random()) * cs, t0: t - Math.random() * (A.dalga.length ? 0 : 2) }); }
+    c.lineWidth = Math.max(1, W / 500);
+    A.dalga.forEach(d => { const k = (t - d.t0) / 2.4, r = cs * (.4 + 2.2 * k);
+      c.strokeStyle = `rgba(255,255,255,${(1 - k) * .55})`; c.beginPath(); c.ellipse(d.x, d.y, r, r * .45, 0, 0, 7); c.stroke(); });
+    for (let n = 0; n < Math.min(40, A.su.length); n++) {
+      const j = A.su[Math.floor(gurultu(n * 3.7 + 9) * A.su.length)], a = Math.sin(t * 3 + n * 1.9);
+      if (a < .55) continue; const x = (j % gw + .5) * cs, y = (((j / gw) | 0) + .5) * cs, r = cs * .35 * (a - .55) / .45;
+      c.fillStyle = `rgba(255,255,255,${(a - .55) * 1.6})`; c.beginPath(); c.moveTo(x - r, y); c.lineTo(x, y - r * .3); c.lineTo(x + r, y); c.lineTo(x, y + r * .3); c.closePath(); c.fill();
+    }
+  }
+  // hayvanlar
+  A.aktor.forEach(a => {
+    const im = SPRITE[a.ad]; if (!im.complete || !im.naturalWidth) return;
+    const p = aktorYer(a, t), s = Math.max(30, a.o.boy * A.dos);
+    let dy = 0, sy = 1, don = 0, alfa = 1, golge = true;
+    if (a.ad === 'kefal') { don = Math.sin(t * (p.yuru ? 11 : 4) + a.faz) * .14; alfa = .9; golge = false;
+      c.strokeStyle = 'rgba(255,255,255,.45)'; c.lineWidth = Math.max(1, s / 30);
+      if (p.yuru) for (let k = 1; k <= 3; k++) { c.beginPath(); c.arc(p.x - p.yon * s * (.35 + k * .18), p.y, s * .08 * k, -1.2, 1.2); c.stroke(); } }
+    else if (a.ad === 'kelaynak') { if (p.yuru) { const yuk = Math.sin(p.k * Math.PI); dy = -s * .9 * yuk; sy = .7 + .3 * Math.abs(Math.sin(t * 14)); } else don = Math.max(0, Math.sin(t * 5 + a.faz)) * .35 * -p.yon; }
+    else if (a.ad === 'ayi') { if (p.yuru) dy = -Math.abs(Math.sin(t * 6)) * s * .05; }
+    else if (p.yuru) dy = -Math.abs(Math.sin(p.k * Math.PI * 4)) * s * .22;
+    if (golge) { c.fillStyle = 'rgba(0,0,0,.25)'; c.beginPath(); c.ellipse(p.x, p.y + s * .38, s * .36 * (1 + dy / s * .5), s * .08, 0, 0, 7); c.fill(); }
+    c.save(); c.globalAlpha = alfa; c.translate(p.x, p.y + dy); c.rotate(don); c.scale(-p.yon, sy);
+    c.drawImage(im, -s / 2, -s / 2, s, s); c.restore();
+  });
+}
+let animNo = 0, animSon = 0, ekranGorunur = true;
+function animDongu(ts) {
+  animNo = 0; if (!G.src || !G.anim || document.hidden || !ekranGorunur) return;
+  if (ts - animSon > 30) { animSon = ts; bas(ts / 1000); }
+  animNo = requestAnimationFrame(animDongu);
+}
+function animBaslat() { if (!animNo && !azHareket) animNo = requestAnimationFrame(animDongu); }
+document.addEventListener('visibilitychange', () => { if (!document.hidden) animBaslat(); });
+
 /* ---------- Ekrana basma ---------- */
 const cv = document.getElementById('ekran'), cx = cv.getContext('2d');
-function bas() {
+if ('IntersectionObserver' in window) new IntersectionObserver(e => { ekranGorunur = e[0].isIntersecting; if (ekranGorunur) animBaslat(); }).observe(cv);
+function bas(t) {
   if (!G.src) return;
   if (cv.width !== G.W || cv.height !== G.H) { cv.width = G.W; cv.height = G.H; }
   const sx = Math.round(G.W * S.perde);
   cx.drawImage(G.gercek || G.src, 0, 0, G.W, G.H);
   cx.drawImage(gelecek, sx, 0, G.W - sx, G.H, sx, 0, G.W - sx, G.H);
+  if (G.anim && sx < G.W) { cx.save(); cx.beginPath(); cx.rect(sx, 0, G.W - sx, G.H); cx.clip(); animCiz(t ?? performance.now() / 1000); cx.restore(); }
   cx.fillStyle = '#fff'; cx.fillRect(sx - 1.5, 0, 3, G.H);
   cx.beginPath(); cx.arc(sx, G.H / 2, 16, 0, 7); cx.fill();
   cx.fillStyle = '#13201a'; cx.font = 'bold 16px sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText('↔', sx, G.H / 2 + 1);
@@ -10999,7 +11078,7 @@ function pulAltRengi(kare, a) {
 }
 async function qrIleBak(kare) {
   const kodlar = await qrBul(kare), { dos, hay } = qrAyir(kodlar);
-  S.qrHayvanSay = hay.length;
+  S.qrHayvanSay = hay.length; S.pulTahmin = [];
   if (!dos.length) return false;
   for (const k in TUR) TUR[k].renk = VARSAYILAN[k].renk.slice(); labYenile();
   // Pul döşemenin QR'ını kapatmışsa: pulun çevresindeki renge bakıp altındaki döşemeyi tanı
@@ -11007,7 +11086,7 @@ async function qrIleBak(kare) {
     const yakin = Math.min(...dos.map(d => Math.hypot(d.x - a.x, d.y - a.y)));
     if (yakin < a.b * 2.2) return;
     const tur = pulAltRengi(kare, a);
-    if (tur) dos.push({ deger: 'pul-alti', x: a.x, y: a.y, b: a.b, tur });
+    if (tur) { dos.push({ deger: 'pul-alti', x: a.x, y: a.y, b: a.b, tur }); S.pulTahmin.push(`${a.em} pulu bir QR'ı kapatıyor, altındaki döşemeyi renginden ${TUR[tur].ad.toLocaleLowerCase('tr')} saydım. Yanlışsa pulu döşemenin alt kenarına kaydırın.`); }
   });
   const { c, gen } = qrMasa(kare.width, kare.height, dos);
   // hayvan pulunu en yakın döşemeye bağla
@@ -11030,7 +11109,7 @@ async function kareyeBak(c) {
     S.qrHayvan = []; return;
   }
   S.ornek = false; yenile(); kontrolEt(); durumCiz(); yenile();
-  document.getElementById('durum').textContent = `QR ile ${S.qrSay.dos} döşeme${S.qrSay.hay ? ', ' + S.qrSay.hay + ' hayvan pulu' : ''} okundu. Perdeyi sürükleyin.`;
+  document.getElementById('durum').textContent = `QR ile ${S.qrSay.dos} döşeme${S.qrSay.hay ? ', ' + S.qrSay.hay + ' hayvan pulu' : ''} okundu. Perdeyi sürükleyin.` + (S.pulTahmin.length ? ' ' + S.pulTahmin.join(' ') : '');
 }
 /* ---------- Canlı kamera ---------- */
 let akis = null;
