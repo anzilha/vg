@@ -125,7 +125,7 @@ ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
 <body>
 <div class="wrap">
   <header>
-    <h1>Zaman Dürbünü</h1>
+    <h1>Zaman Dürbünü <small id="surum" style="font:600 12px/1 var(--f-body, sans-serif);opacity:.6;vertical-align:middle">Sürüm 6 · 28 Ekim</small></h1>
     <p>Deniz 2100'den 10 durum gönderdi. Her durumu masada Cascadia döşemeleriyle düzeltin, fotoğrafını çekin. Dürbün çözümünüzün 2100'de işe yarayıp yaramadığını gösterir.</p>
   </header>
 
@@ -10701,6 +10701,18 @@ function animKur(h, goster) {
     ekle(t.yer, 0);
     if (ad === 'kefal') { ekle(t.yer, 1); const g = [...t.yer.komsu].map(k => P[k]).find(q => q.tur === 'sulak' && q.yasar); if (g) ekle(g, 2); }
   });
+  // Masaya konan pulun hayvanı kendi döşemesinde canlanır; o döşemede yaşayamıyorsa soluk ve hareketsiz durur
+  if (!goster && S.foto) (S.qrHayvan || []).forEach((a, n) => {
+    if (!a.tur || a.nx == null) return; const ad = EM_SPR[a.em], o = AKTOR[ad], t = h.tur.find(t => t.em === a.em);
+    const gx = Math.floor(a.nx * W / cs), gy = Math.floor(a.ny * G.H / cs); let p = null;
+    for (let r = 0; r <= 4 && !p; r++) for (let dy = -r; dy <= r && !p; dy++) for (let dx = -r; dx <= r && !p; dx++) { const xx = gx + dx, yy = gy + dy; if (xx < 0 || yy < 0 || xx >= gw || yy >= G.gh) continue; const q = P[G.idx[G.parca[yy * gw + xx]]]; if (q && q.tur === a.tur) p = q; }
+    if (!p) return;
+    const canli = !!(t && t.var && p.yasar);
+    if (canli) { const yol = yolKur(p, 900 + n * 31), sure = []; let top = 0;
+      yol.forEach((u, i) => { const v = yol[(i + 1) % yol.length], d = Math.hypot(v[0] - u[0], v[1] - u[1]) / (o.hiz * W) + .4; sure.push(d); top += d + o.dur; });
+      aktor.push({ ad, o, yol, sure, top, faz: 0 }); }
+    else aktor.push({ ad, o, yol: [[(gx + .5) * cs, (gy + .5) * cs]], sure: [0], top: 1, faz: 0, olu: true });
+  });
   const dos = Math.min(W * .2, Math.max(W * .06, Math.sqrt(Math.min(...P.map(p => p.boy))) * cs));
   G.anim = { su, aktor, dalga: [], dos };
   animBaslat();
@@ -10721,11 +10733,11 @@ function animCiz(t) {
   // suda dalga halkaları ve parıltılar
   if (A.su.length) {
     A.dalga = A.dalga.filter(d => t - d.t0 < 2.4 && t >= d.t0);
-    const hedefSay = Math.min(14, Math.ceil(A.su.length / 40));
+    const hedefSay = Math.min(24, Math.ceil(A.su.length / 20));
     while (A.dalga.length < hedefSay) { const j = A.su[Math.floor(Math.random() * A.su.length)]; A.dalga.push({ x: (j % gw + Math.random()) * cs, y: (((j / gw) | 0) + Math.random()) * cs, t0: t - Math.random() * (A.dalga.length ? 0 : 2) }); }
     c.lineWidth = Math.max(1, W / 500);
     A.dalga.forEach(d => { const k = (t - d.t0) / 2.4, r = cs * (.4 + 2.2 * k);
-      c.strokeStyle = `rgba(255,255,255,${(1 - k) * .55})`; c.beginPath(); c.ellipse(d.x, d.y, r, r * .45, 0, 0, 7); c.stroke(); });
+      c.strokeStyle = `rgba(255,255,255,${(1 - k) * .75})`; c.beginPath(); c.ellipse(d.x, d.y, r, r * .45, 0, 0, 7); c.stroke(); });
     for (let n = 0; n < Math.min(40, A.su.length); n++) {
       const j = A.su[Math.floor(gurultu(n * 3.7 + 9) * A.su.length)], a = Math.sin(t * 3 + n * 1.9);
       if (a < .55) continue; const x = (j % gw + .5) * cs, y = (((j / gw) | 0) + .5) * cs, r = cs * .35 * (a - .55) / .45;
@@ -10735,6 +10747,7 @@ function animCiz(t) {
   // hayvanlar
   A.aktor.forEach(a => {
     const im = SPRITE[a.ad]; if (!im.complete || !im.naturalWidth) return;
+    if (a.olu) { const s = Math.max(30, a.o.boy * A.dos), [X, Y] = a.yol[0]; c.save(); c.globalAlpha = .45 + .1 * Math.sin(t * 2); c.filter = 'grayscale(1)'; c.drawImage(im, X - s / 2, Y - s / 2, s, s); c.restore(); return; }
     const p = aktorYer(a, t), s = Math.max(30, a.o.boy * A.dos);
     let dy = 0, sy = 1, don = 0, alfa = 1, golge = true;
     if (a.ad === 'kefal') { don = Math.sin(t * (p.yuru ? 11 : 4) + a.faz) * .14; alfa = .9; golge = false;
@@ -11082,7 +11095,7 @@ async function qrIleBak(kare) {
     const u = dos.map(d => ({ d, m: Math.hypot(d.x - a.x, d.y - a.y) })).sort((p, q) => p.m - q.m), [b1, b2] = u;
     if (!b1 || b1.m > gen * 0.62) return { em: a.em, tur: null, sorun: 'disari' };
     if (b2 && b2.m < b1.m * 1.3) return { em: a.em, tur: null, sorun: 'sinir' };
-    return { em: a.em, tur: b1.d.tur, kod: b1.d.deger };
+    return { em: a.em, tur: b1.d.tur, kod: b1.d.deger, nx: a.x / kare.width, ny: a.y / kare.height };
   });
   S.img = c; S.foto = true; cozumle(c);
   const g = document.createElement('canvas'); g.width = G.W; g.height = G.H; g.getContext('2d').drawImage(kare, 0, 0, G.W, G.H); G.gercek = g;
